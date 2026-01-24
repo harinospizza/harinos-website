@@ -1,0 +1,8 @@
+{
+  "name": "Harino's Pizza & Fast Food",
+  "description": "Premium Pizza Outlet with AI assistant, Loyalty Program, and WhatsApp Ordering.",
+  "requestFramePermissions": [
+    "microphone",
+    "geolocation"
+  ]
+}
