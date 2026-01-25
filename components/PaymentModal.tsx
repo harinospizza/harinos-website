@@ -11,8 +11,8 @@ interface PaymentModalProps {
 const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose, total, onPaymentComplete }) => {
   if (!isOpen) return null;
 
-  const upiId = "7818958571@ybl"; // Example UPI ID based on the phone number
-  const recipientName = "Harino's Outlet";
+  const upiId = "Q682142711@ybl"; // Example UPI ID based on the phone number
+  const recipientName = "Harino's";
   
   // Generic UPI deep link components
   const getUpiUrl = (app: 'gpay' | 'phonepe' | 'paytm' | 'generic') => {
@@ -22,9 +22,9 @@ const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose, total, onP
   };
 
   const paymentApps = [
-    { name: 'PhonePe', icon: '🟣', color: 'bg-[#5f259f]', scheme: 'phonepe' },
-    { name: 'GPay', icon: '🔵', color: 'bg-[#4285f4]', scheme: 'gpay' },
-    { name: 'Paytm', icon: '💎', color: 'bg-[#00baf2]', scheme: 'paytm' },
+    { name: 'PhonePe', icon: 'https://share.google/F5qeVvizqZjcvcNUJ', color: 'bg-[#5f259f]', scheme: 'phonepe' },
+    { name: 'GPay', icon: 'https://www.google.com/search?q=gpay+icon+url&client=ms-android-realme-terr1-rso2&hs=oDEp&sca_esv=9236cc086a353fe5&udm=2&biw=361&bih=682&aic=0&sxsrf=ANbL-n5Q0Qdlvx50M8C_KdLjcorgBTUaTQ%3A1769329216160&ei=QNJ1afi9CdmtseMP-53ZiQg&oq=gpay+icon+url&gs_lp=EhJtb2JpbGUtZ3dzLXdpei1pbWciDWdwYXkgaWNvbiB1cmwyBhAAGAcYHjIGEAAYBxgeMgYQABgHGB4yBhAAGAcYHjIGEAAYBxgeSOwfUKwQWM4dcAB4AJABAJgB7wagAfYUqgELMC45LjAuMS42LTG4AQPIAQD4AQGYAgOgArAJwgIIEAAYgAQYogTCAgoQABiABBhDGIoFmAMAiAYBkgcHMC4yLjYtMaAH-iKyBwcwLjIuNi0xuAewCcIHBTItMi4xyAcVgAgA&sclient=mobile-gws-wiz-img', color: 'bg-[#4285f4]', scheme: 'gpay' },
+    { name: 'Paytm', icon: 'https://www.google.com/search?q=paytm+icon+url&client=ms-android-realme-terr1-rso2&hs=oDEp&sca_esv=9236cc086a353fe5&udm=2&biw=361&bih=682&aic=0&sxsrf=ANbL-n4RFHroFvLt_aD9UPmVJVuz3cvsug%3A1769329245982&ei=XdJ1aZrdO_GOseMPwd74wA4&oq=paytm+icon+url&gs_lp=EhJtb2JpbGUtZ3dzLXdpei1pbWciDnBheXRtIGljb24gdXJsMggQABiABBiiBDIIEAAYgAQYogQyCBAAGIAEGKIEMggQABiABBiiBEjdKVDzEljJJ3AAeACQAQCYAe4BoAG7DqoBBTAuNi40uAEDyAEA-AEBmAIFoAL1BsICBhAAGAcYHsICCBAAGAcYCBgewgIIEAAYBRgHGB7CAgoQABiABBhDGIoFmAMAiAYBkgcFMC40LjGgB-YdsgcFMC40LjG4B_UGwgcFMi0zLjLIByiACAA&sclient=mobile-gws-wiz-img', color: 'bg-[#00baf2]', scheme: 'paytm' },
   ];
 
   return (
