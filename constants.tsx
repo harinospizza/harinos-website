@@ -36,7 +36,7 @@ export const MENU_ITEMS: MenuItem[] = [
     sizes: [{ label: 'Regular', price: 119 }, { label: 'Medium', price: 239 }, { label: 'Large', price: 349 }]
   },
   {
-    id: 'p1_c',
+    id: 'p1_cap',
     name: "Cheese & Capsicum",
     description: "Your choice of crisp capsicum with a double layer of cheese.",
     price: 119,
@@ -47,7 +47,7 @@ export const MENU_ITEMS: MenuItem[] = [
     sizes: [{ label: 'Regular', price: 119 }, { label: 'Medium', price: 239 }, { label: 'Large', price: 349 }]
   },
   {
-    id: 'p1_c',
+    id: 'p1_corn',
     name: "Cheese & Corn",
     description: "Sweet golden corn smothered in mozzarella.",
     price: 129,
@@ -384,7 +384,7 @@ export const MENU_ITEMS: MenuItem[] = [
     sizes: [{ label: 'Half', price: 80 }, { label: 'Full', price: 160 }]
   },
     {
-    id: 'f_vg',
+    id: 'f_inferno',
     name: "Inferno Fries",
     description: "Loaded fries with fresh vegetable toppings.",
     price: 80,
