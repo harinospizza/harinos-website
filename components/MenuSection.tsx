@@ -6,6 +6,7 @@ interface MenuSectionProps {
   items: MenuItem[];
   onAddToCart: (item: MenuItem, selectedSize?: string) => void;
   activeOffers: Offer[];
+  selectedCategory: string;
 }
 
 const MenuCard: React.FC<{ 
