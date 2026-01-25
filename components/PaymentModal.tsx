@@ -22,9 +22,9 @@ const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose, total, onP
   };
 
   const paymentApps = [
-  { name: 'PhonePe', icon: 'https://upload.wikimedia.org/wikipedia/commons/0/09/PhonePe_Logo.svg' },
-  { name: 'GPay',    icon: 'https://upload.wikimedia.org/wikipedia/commons/2/2f/Google_Pay_Logo.svg' },
-  { name: 'Paytm',   icon: 'https://upload.wikimedia.org/wikipedia/commons/5/55/Paytm_Logo.svg' },
+  { name: 'PhonePe', icon: "/images/phone.png" },
+  { name: 'GPay',    icon: "/images/gpay.png" },
+  { name: 'Paytm',   icon: "/images/paytm.png" },
 ];
 
   return (
