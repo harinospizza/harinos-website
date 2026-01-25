@@ -461,7 +461,6 @@ ${locationString}
         onReorder={handleReorder}
       />
       <PaymentModal isOpen={isPaymentOpen} onClose={() => setIsPaymentOpen(false)} total={currentTotal} onPaymentComplete={handlePaymentComplete} />
-      <AIOrderAssistant />
       {notification && (
         <div className="fixed bottom-32 left-1/2 -translate-x-1/2 z-[100] animate-in slide-in-from-bottom-10 duration-500 w-full max-w-[90%] md:max-w-xs">
            <div className="bg-slate-900 text-white px-6 md:px-8 py-4 rounded-2xl shadow-2xl border border-red-600/30 flex items-center space-x-3 mx-auto">
