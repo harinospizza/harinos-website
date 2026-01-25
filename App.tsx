@@ -46,12 +46,12 @@ const App: React.FC = () => {
       const mins = now.getMinutes();
       const currentTimeInMins = hour * 60 + mins;
 
-      const openingTime = 10 * 60;
+      const openingTime = 11 * 60;
       const closingTime = 21 * 60;
 
       if (currentTimeInMins < openingTime || currentTimeInMins >= closingTime) {
         setIsStoreOpen(false);
-        setStatusMessage("Store is currently closed. Open: 10:00 AM - 09:00 PM.");
+        setStatusMessage("Store is currently closed. Open: 11:00 AM - 09:00 PM.");
       } else {
         setIsStoreOpen(true);
         setStatusMessage("");
@@ -111,8 +111,8 @@ const App: React.FC = () => {
 
   const handleShare = async () => {
     const shareData = {
-      title: "Harino's Pizza & Fast Food",
-      text: "Check out Harino's - Handcrafted Pizza & Fast Food! Because Hari Knows.",
+      title: "Harino's Pizza",
+      text: "Check out Harino's - Handcrafted Pizza! Because Hari Knows.",
       url: "https://harinos.store"
     };
 
