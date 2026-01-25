@@ -8,7 +8,7 @@ import Header from './components/Header';
 import Hero from './components/Hero';
 import MenuSection from './components/MenuSection';
 import CartSidebar from './components/CartSidebar';
-import AIOrderAssistant from './components/AIOrderAssistant';
+
 import PastOrders from './components/PastOrders';
 import PaymentModal from './components/PaymentModal';
 
