@@ -186,23 +186,23 @@ export const MENU_ITEMS: MenuItem[] = [
     id: 'm1_v',
     name: "Veg Steam Momos",
     description: "Delicate steamed veggie dumplings.",
-    price: 30,
-    category: Category.MOMOS_FRIES,
-    image: 'https://images.unsplash.com/photo-1625220194771-7ebdea0b70b9?auto=format&fit=crop&w=800&q=80',
-    vegetarian: true,
-    available: true,
-    sizes: [{ label: 'Half', price: 30 }, { label: 'Full', price: 50 }]
-  },
-  {
-    id: 'm1_s',
-    name: "Soya Steam Momos",
-    description: "Steamed momos with protein-rich soya filling.",
     price: 40,
     category: Category.MOMOS_FRIES,
     image: 'https://images.unsplash.com/photo-1625220194771-7ebdea0b70b9?auto=format&fit=crop&w=800&q=80',
     vegetarian: true,
     available: true,
     sizes: [{ label: 'Half', price: 40 }, { label: 'Full', price: 60 }]
+  },
+  {
+    id: 'm1_s',
+    name: "Soya Steam Momos",
+    description: "Steamed momos with protein-rich soya filling.",
+    price: 30,
+    category: Category.MOMOS_FRIES,
+    image: 'https://images.unsplash.com/photo-1625220194771-7ebdea0b70b9?auto=format&fit=crop&w=800&q=80',
+    vegetarian: true,
+    available: true,
+    sizes: [{ label: 'Half', price: 30 }, { label: 'Full', price: 50 }]
   },
   {
     id: 'm2_v',
@@ -219,12 +219,12 @@ export const MENU_ITEMS: MenuItem[] = [
     id: 'm2_s',
     name: "Soya Fried Momos",
     description: "Golden fried soya dumplings.",
-    price: 50,
+    price: 30,
     category: Category.MOMOS_FRIES,
     image: 'https://images.unsplash.com/photo-1541696432-82c6da8ce7bf?auto=format&fit=crop&w=800&q=80',
     vegetarian: true,
     available: true,
-    sizes: [{ label: 'Half', price: 50 }, { label: 'Full', price: 70 }]
+    sizes: [{ label: 'Half', price: 30 }, { label: 'Full', price: 50 }]
   },
   {
     id: 'm3_v',
@@ -241,12 +241,12 @@ export const MENU_ITEMS: MenuItem[] = [
     id: 'm3_s',
     name: "Soya Tandoori Momos",
     description: "Smoky tandoori soya momos.",
-    price: 60,
+    price: 40,
     category: Category.MOMOS_FRIES,
     image: 'https://images.unsplash.com/photo-1626074353765-517a681e40be?auto=format&fit=crop&w=800&q=80',
     vegetarian: true,
     available: true,
-    sizes: [{ label: 'Half', price: 60 }, { label: 'Full', price: 90 }]
+    sizes: [{ label: 'Half', price: 40 }, { label: 'Full', price: 60 }]
   },
   {
     id: 'm4_v',
@@ -296,23 +296,23 @@ export const MENU_ITEMS: MenuItem[] = [
     id: 'm6_v',
     name: "Veg Gravy Momos",
     description: "Veg momos tossed in spicy house gravy.",
-    price: 70,
-    category: Category.MOMOS_FRIES,
-    image: 'https://images.unsplash.com/photo-1625220194771-7ebdea0b70b9?auto=format&fit=crop&w=800&q=80',
-    vegetarian: true,
-    available: true,
-    sizes: [{ label: 'Half', price: 70 }, { label: 'Full', price: 110 }]
-  },
-  {
-    id: 'm6_s',
-    name: "Soya Gravy Momos",
-    description: "Soya momos served in rich spicy gravy.",
     price: 80,
     category: Category.MOMOS_FRIES,
     image: 'https://images.unsplash.com/photo-1625220194771-7ebdea0b70b9?auto=format&fit=crop&w=800&q=80',
     vegetarian: true,
     available: true,
     sizes: [{ label: 'Half', price: 80 }, { label: 'Full', price: 120 }]
+  },
+  {
+    id: 'm6_s',
+    name: "Soya Gravy Momos",
+    description: "Soya momos served in rich spicy gravy.",
+    price: 70,
+    category: Category.MOMOS_FRIES,
+    image: 'https://images.unsplash.com/photo-1625220194771-7ebdea0b70b9?auto=format&fit=crop&w=800&q=80',
+    vegetarian: true,
+    available: true,
+    sizes: [{ label: 'Half', price: 70 }, { label: 'Full', price: 110 }]
   },
 
   // --- FRIES ---
@@ -360,6 +360,17 @@ export const MENU_ITEMS: MenuItem[] = [
     available: true,
     sizes: [{ label: 'Half', price: 80 }, { label: 'Full', price: 160 }]
   },
+    {
+    id: 'f_vg',
+    name: "Inferno Fries",
+    description: "Loaded fries with fresh vegetable toppings.",
+    price: 80,
+    category: Category.MOMOS_FRIES,
+    image: 'https://images.unsplash.com/photo-1585109649139-366815a0d713?auto=format&fit=crop&w=800&q=80',
+    vegetarian: true,
+    available: true,
+    sizes: [{ label: 'Half', price: 80 }, { label: 'Full', price: 160 }]
+  },
 
   // --- BURGERS ---
   { id: 'b_tk', name: "Tikka Burger", description: "Spicy tikka patty with premium mayo.", price: 40, category: Category.BURGERS, image: 'https://images.unsplash.com/photo-1550547660-d9450f859349?auto=format&fit=crop&w=800&q=80', vegetarian: true, available: true },
@@ -374,7 +385,7 @@ export const MENU_ITEMS: MenuItem[] = [
   // --- SIDE ORDERS & SNACKS ---
   { id: 's_cl', name: "Choco Lava Cake", description: "Molten chocolate center cake.", price: 60, category: Category.SIDES, image: 'https://images.unsplash.com/photo-1624353365286-3f8d62daad51?auto=format&fit=crop&w=800&q=80', vegetarian: true, available: true },
   { id: 's_gb', name: "Garlic Bread", description: "Freshly baked garlic butter bread.", price: 80, category: Category.SIDES, image: 'https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?auto=format&fit=crop&w=800&q=80', vegetarian: true, available: true },
-  { id: 's_sg', name: "Stuffed Garlic Bread", description: "Loaded with cheese, corn, and jalapeno.", price: 120, category: Category.SIDES, image: 'https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?auto=format&fit=crop&w=800&q=80', vegetarian: true, available: true },
+  { id: 's_sg', name: "Stuffed Garlic Bread", description: "Loaded with cheese, corn, and onion.", price: 120, category: Category.SIDES, image: 'https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?auto=format&fit=crop&w=800&q=80', vegetarian: true, available: true },
   {
     id: 's_zp',
     name: "Zingi Parcel",
