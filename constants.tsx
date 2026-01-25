@@ -125,7 +125,7 @@ export const MENU_ITEMS: MenuItem[] = [
     description: "Explosive flavors with a special house-spice blend and veggies.",
     price: 169,
     category: Category.PIZZA,
-    image: 'https://drive.google.com/file/d/1k9PdDgt6tba4bSwID0d9B6U0wriTqAoP/view?usp=drivesdk',
+    image: <img src="IMG-20260125-WA0046.jpg" />,
     vegetarian: true,
     available: true,
     sizes: [{ label: 'Regular', price: 169 }, { label: 'Medium', price: 289 }, { label: 'Large', price: 409 }]
