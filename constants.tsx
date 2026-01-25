@@ -403,19 +403,19 @@ export const MENU_ITEMS: MenuItem[] = [
   { id: 'b_td', name: "Tandoori Burger", description: "Smoky tandoori patty burger.", price: 60, category: Category.BURGERS, image: "/images/tanduriburger.jpeg", vegetarian: true, available: true },
   { id: 'b_cp', name: "Cheese & Paneer Burger", description: "Double the joy with cheese and paneer.", price: 70, category: Category.BURGERS, image: "/images/cheesepaneerburger.jpeg", vegetarian: true, available: true },
   { id: 'b_in', name: "Inferno Burger", description: "Extremely spicy for the brave.", price: 70, category: Category.BURGERS, image: "/images/infernoburger.jpeg", vegetarian: true, available: true, spicy: true },
-  { id: 'b_cv', name: "Veg Carnival Burger", description: "Jumbo burger loaded with everything.", price: 90, category: Category.BURGERS, image: "/images/vegcarnival.jpeg", vegetarian: true, available: true, popular: true },
+  { id: 'b_cv', name: "Veg Carnival Burger", description: "Jumbo burger loaded with everything.", price: 90, category: Category.BURGERS, image: "/images/vegcar.jpeg", vegetarian: true, available: true, popular: true },
 
   // --- SIDE ORDERS & SNACKS ---
-  { id: 's_cl', name: "Choco Lava Cake", description: "Molten chocolate center cake.", price: 60, category: Category.SIDES, image: 'https://images.unsplash.com/photo-1624353365286-3f8d62daad51?auto=format&fit=crop&w=800&q=80', vegetarian: true, available: true },
-  { id: 's_gb', name: "Garlic Bread", description: "Freshly baked garlic butter bread.", price: 80, category: Category.SIDES, image: 'https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?auto=format&fit=crop&w=800&q=80', vegetarian: true, available: true },
-  { id: 's_sg', name: "Stuffed Garlic Bread", description: "Loaded with cheese, corn, and onion.", price: 120, category: Category.SIDES, image: 'https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?auto=format&fit=crop&w=800&q=80', vegetarian: true, available: true },
+  { id: 's_cl', name: "Choco Lava Cake", description: "Molten chocolate center cake.", price: 60, category: Category.SIDES, image: "/images/chocolava.jpeg", vegetarian: true, available: true },
+  { id: 's_gb', name: "Garlic Bread", description: "Freshly baked garlic butter bread.", price: 80, category: Category.SIDES, image: "/images/garlicbread.jpeg", vegetarian: true, available: true },
+  { id: 's_sg', name: "Stuffed Garlic Bread", description: "Loaded with cheese, corn, and onion.", price: 120, category: Category.SIDES, image: "/images/stuffed.jpeg", vegetarian: true, available: true },
   {
     id: 's_zp',
     name: "Zingi Parcel",
     description: "Paneer stuffed savory parcels.",
     price: 70,
     category: Category.SIDES,
-    image: 'https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?auto=format&fit=crop&w=800&q=80',
+    image: "/images/zingi.jpeg",
     vegetarian: true,
     available: true,
     sizes: [{ label: 'Half', price: 70 }, { label: 'Full', price: 130 }]
@@ -426,13 +426,13 @@ export const MENU_ITEMS: MenuItem[] = [
     description: "Folded pizza pocket stuffed with toppings.",
     price: 70,
     category: Category.SIDES,
-    image: 'https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?auto=format&fit=crop&w=800&q=80',
+    image: "/images/calzone.jpeg",
     vegetarian: true,
     available: true,
     sizes: [{ label: 'Half', price: 70 }, { label: 'Full', price: 130 }]
   },
-  { id: 's_cp', name: "Chilli Potato", description: "Crispy honey chilli glazed potato fingers.", price: 90, category: Category.SIDES, image: 'https://images.unsplash.com/photo-1603073163308-9654c3fb70b5?auto=format&fit=crop&w=800&q=80', vegetarian: true, available: true },
-  { id: 's_hp', name: "Honey Chilli Potato", description: "Sweet and spicy crispy potato snack.", price: 100, category: Category.SIDES, image: 'https://images.unsplash.com/photo-1603073163308-9654c3fb70b5?auto=format&fit=crop&w=800&q=80', vegetarian: true, available: true },
+  { id: 's_cp', name: "Chilli Potato", description: "Crispy honey chilli glazed potato fingers.", price: 90, category: Category.SIDES, image: "/images/chillipotato.jpeg", vegetarian: true, available: true },
+  { id: 's_hp', name: "Honey Chilli Potato", description: "Sweet and spicy crispy potato snack.", price: 100, category: Category.SIDES, image: "/images/chillipotato.jpeg", vegetarian: true, available: true },
 
   // --- BEVERAGES ---
   {
