@@ -6,7 +6,6 @@ interface MenuSectionProps {
   items: MenuItem[];
   onAddToCart: (item: MenuItem, selectedSize?: string) => void;
   activeOffers: Offer[];
-  selectedCategory: string;
 }
 
 const MenuCard: React.FC<{ 
@@ -114,14 +113,10 @@ const MenuCard: React.FC<{
   );
 };
 
-const MenuSection: React.FC<MenuSectionProps> = ({ items, onAddToCart, activeOffers, selectedCategory }) => {
-const filteredItems = items.filter(
-  item => item.category === selectedCategory
-);
-
+const MenuSection: React.FC<MenuSectionProps> = ({ items, onAddToCart, activeOffers }) => {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-      {filteredItems.map((item) => (
+    <div>
+      {items.map((item) => (
         <MenuCard 
           key={item.id} 
           item={item} 
