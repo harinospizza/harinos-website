@@ -125,7 +125,7 @@ export const MENU_ITEMS: MenuItem[] = [
     description: "Explosive flavors with a special house-spice blend and veggies.",
     price: 169,
     category: Category.PIZZA,
-    image: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=800&q=80',
+    image: 'https://drive.google.com/file/d/1k9PdDgt6tba4bSwID0d9B6U0wriTqAoP/view?usp=drivesdk',
     vegetarian: true,
     available: true,
     sizes: [{ label: 'Regular', price: 169 }, { label: 'Medium', price: 289 }, { label: 'Large', price: 409 }]
@@ -375,7 +375,7 @@ export const MENU_ITEMS: MenuItem[] = [
   // --- BURGERS ---
   { id: 'b_tk', name: "Tikka Burger", description: "Spicy tikka patty with premium mayo.", price: 40, category: Category.BURGERS, image: 'https://images.unsplash.com/photo-1550547660-d9450f859349?auto=format&fit=crop&w=800&q=80', vegetarian: true, available: true },
   { id: 'b_cl', name: "Classic Burger", description: "The original veg burger experience.", price: 50, category: Category.BURGERS, image: 'https://images.unsplash.com/photo-1571091723244-13c5213d242f?auto=format&fit=crop&w=800&q=80', vegetarian: true, available: true },
-  { id: 'b_ch', name: "Cheese Burger", description: "Classic burger with extra cheese slice.", price: 60, category: Category.BURGERS, image: 'https://images.unsplash.com/photo-1550547660-d9450f859349?auto=format&fit=crop&w=800&q=80', vegetarian: true, available: true },
+  { id: 'b_ch', name: "Cheese Burger", description: "Classic burger with extra cheese slice.", price: 60, category: Category.BURGERS, image: 'https://drive.google.com/file/d/1_0v4BfIfKQAVXdfuEkmLf0Et86eNfOZH/view?usp=drivesdk', vegetarian: true, available: true },
   { id: 'b_pn', name: "Paneer Burger", description: "Fresh paneer slab with spicy sauce.", price: 60, category: Category.BURGERS, image: 'https://images.unsplash.com/photo-1571091723244-13c5213d242f?auto=format&fit=crop&w=800&q=80', vegetarian: true, available: true },
   { id: 'b_td', name: "Tandoori Burger", description: "Smoky tandoori patty burger.", price: 60, category: Category.BURGERS, image: 'https://images.unsplash.com/photo-1550547660-d9450f859349?auto=format&fit=crop&w=800&q=80', vegetarian: true, available: true },
   { id: 'b_cp', name: "Cheese & Paneer Burger", description: "Double the joy with cheese and paneer.", price: 70, category: Category.BURGERS, image: 'https://images.unsplash.com/photo-1571091723244-13c5213d242f?auto=format&fit=crop&w=800&q=80', vegetarian: true, available: true },
