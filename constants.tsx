@@ -396,7 +396,7 @@ export const MENU_ITEMS: MenuItem[] = [
   },
 
   // --- BURGERS ---
-  { id: 'b_tk', name: "Tikka Burger", description: "Spicy tikka patty with premium mayo.", price: 40, category: Category.BURGERS, image: "/images/tikkaburger.jpeg", vegetarian: true, available: true },
+  { id: 'b_tk', name: "Tikka Burger", description: "Spicy tikka patty with premium mayo.", price: 40, category: Category.BURGERS, image: "/images/tikkaburgar.jpeg", vegetarian: true, available: true },
   { id: 'b_cl', name: "Classic Burger", description: "The original veg burger experience.", price: 50, category: Category.BURGERS, image: "/images/classicburger.jpeg", vegetarian: true, available: true },
   { id: 'b_ch', name: "Cheese Burger", description: "Classic burger with extra cheese slice.", price: 60, category: Category.BURGERS, image: "/images/cheeseburger.jpeg", vegetarian: true, available: true },
   { id: 'b_pn', name: "Paneer Burger", description: "Fresh paneer slab with spicy sauce.", price: 60, category: Category.BURGERS, image: "/images/paneerburger.jpeg", vegetarian: true, available: true },
