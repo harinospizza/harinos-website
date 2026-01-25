@@ -161,6 +161,9 @@ const App: React.FC = () => {
       ? MENU_ITEMS 
       : MENU_ITEMS.filter(item => item.category === selectedCategory);
   }, [selectedCategory]);
+  console.log("Selected:", selectedCategory);
+console.log("Filtered:", filteredItems.map(i => i.name));
+
 
   const deliveryFee = useMemo(() => {
     if (orderType === 'takeaway' || distance === null) return 0;
