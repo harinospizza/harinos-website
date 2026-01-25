@@ -19,33 +19,56 @@ export const MENU_ITEMS: MenuItem[] = [
     description: "Classic hand-stretched pizza topped with premium mozzarella and fresh red onions.",
     price: 99,
     category: Category.PIZZA,
-    image: 'https://images.unsplash.com/photo-1574071318508-1cdbad80ad38?auto=format&fit=crop&w=800&q=80',
+    image: "/images/cheeseonion.jpeg",
     vegetarian: true,
     available: true,
     sizes: [{ label: 'Regular', price: 99 }, { label: 'Medium', price: 219 }, { label: 'Large', price: 329 }]
   },
   {
-    id: 'p1_tc',
-    name: "Cheese & Tomato / Capsicum",
+    id: 'p1_t',
+    name: "Cheese & Tomato",
     description: "Your choice of juicy tomatoes or crisp capsicum with a double layer of cheese.",
     price: 119,
     category: Category.PIZZA,
-    image: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=800&q=80',
+    image: "/images/cheesetomato.jpeg",
     vegetarian: true,
     available: true,
     sizes: [{ label: 'Regular', price: 119 }, { label: 'Medium', price: 239 }, { label: 'Large', price: 349 }]
   },
   {
-    id: 'p1_cp',
-    name: "Cheese & Corn / Paneer",
-    description: "Sweet golden corn or soft paneer chunks smothered in mozzarella.",
+    id: 'p1_c',
+    name: "Cheese & Capsicum",
+    description: "Your choice of crisp capsicum with a double layer of cheese.",
+    price: 119,
+    category: Category.PIZZA,
+    image: "/images/cheesecap.jpeg",
+    vegetarian: true,
+    available: true,
+    sizes: [{ label: 'Regular', price: 119 }, { label: 'Medium', price: 239 }, { label: 'Large', price: 349 }]
+  },
+  {
+    id: 'p1_c',
+    name: "Cheese & Corn",
+    description: "Sweet golden corn smothered in mozzarella.",
     price: 129,
     category: Category.PIZZA,
-    image: 'https://images.unsplash.com/photo-1593560708920-61dd98c46a4e?auto=format&fit=crop&w=800&q=80',
+    image: "/images/sweetcorn.jpeg",
     vegetarian: true,
     available: true,
     sizes: [{ label: 'Regular', price: 129 }, { label: 'Medium', price: 259 }, { label: 'Large', price: 369 }]
   },
+  {
+    id: 'p1_p',
+    name: "Cheese & Paneer",
+    description: "Soft paneer chunks smothered in mozzarella.",
+    price: 129,
+    category: Category.PIZZA,
+    image: "/images/cheesepaneer.jpeg",
+    vegetarian: true,
+    available: true,
+    sizes: [{ label: 'Regular', price: 129 }, { label: 'Medium', price: 259 }, { label: 'Large', price: 369 }]
+  },
+
 
   // --- PIZZAS: 2. Paneer Special Pizzas ---
   {
@@ -54,7 +77,7 @@ export const MENU_ITEMS: MenuItem[] = [
     description: "Smoky tandoori marinated paneer with grilled onions.",
     price: 149,
     category: Category.PIZZA,
-    image: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=800&q=80',
+    image: "/images/tanduripaneer.jpeg",
     vegetarian: true,
     available: true,
     sizes: [{ label: 'Regular', price: 149 }, { label: 'Medium', price: 289 }, { label: 'Large', price: 409 }]
@@ -65,7 +88,7 @@ export const MENU_ITEMS: MenuItem[] = [
     description: "Masala spiced paneer chunks paired with tangy black olives.",
     price: 149,
     category: Category.PIZZA,
-    image: 'https://images.unsplash.com/photo-1574071318508-1cdbad80ad38?auto=format&fit=crop&w=800&q=80',
+    image: "/images/paneermasala.jpeg",
     vegetarian: true,
     available: true,
     sizes: [{ label: 'Regular', price: 149 }, { label: 'Medium', price: 289 }, { label: 'Large', price: 409 }]
@@ -76,7 +99,7 @@ export const MENU_ITEMS: MenuItem[] = [
     description: "Spicy paneer pizza for those who love a hot kick.",
     price: 149,
     category: Category.PIZZA,
-    image: 'https://images.unsplash.com/photo-1594007654729-407eedc4be65?auto=format&fit=crop&w=800&q=80',
+    image: "/images/teekhapaneer.jpeg",
     vegetarian: true,
     available: true,
     spicy: true,
@@ -88,7 +111,7 @@ export const MENU_ITEMS: MenuItem[] = [
     description: "The dream combo of grilled paneer and sweet corn.",
     price: 159,
     category: Category.PIZZA,
-    image: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&w=800&q=80',
+    image: "/images/ultimatepaneer.jpeg",
     vegetarian: true,
     available: true,
     popular: true,
@@ -102,7 +125,7 @@ export const MENU_ITEMS: MenuItem[] = [
     description: "Mixed veggies with a spicy jalapeno twist.",
     price: 169,
     category: Category.PIZZA,
-    image: 'https://images.unsplash.com/photo-1594007654729-407eedc4be65?auto=format&fit=crop&w=800&q=80',
+    image: "/images/masala.jpeg",
     vegetarian: true,
     available: true,
     sizes: [{ label: 'Regular', price: 169 }, { label: 'Medium', price: 289 }, { label: 'Large', price: 409 }]
@@ -113,7 +136,7 @@ export const MENU_ITEMS: MenuItem[] = [
     description: "A mountain of fresh vegetables, olives, and extra cheese.",
     price: 169,
     category: Category.PIZZA,
-    image: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&w=800&q=80',
+    image: "/images/vegover.jpeg",
     vegetarian: true,
     available: true,
     popular: true,
@@ -125,7 +148,7 @@ export const MENU_ITEMS: MenuItem[] = [
     description: "Explosive flavors with a special house-spice blend and veggies.",
     price: 169,
     category: Category.PIZZA,
-    image: "/images/IMG-20260125-WA0046.jpg",
+    image: "/images/bomb.jpeg",
     vegetarian: true,
     available: true,
     sizes: [{ label: 'Regular', price: 169 }, { label: 'Medium', price: 289 }, { label: 'Large', price: 409 }]
@@ -134,22 +157,22 @@ export const MENU_ITEMS: MenuItem[] = [
   // --- PIZZAS: 4. Crunch & Fusion ---
   {
     id: 'p4_mc',
-    name: "Mighty Crunch (Onion / Tomato)",
-    description: "Extra crunchy base with your choice of onion or tomato toppings.",
+    name: "Mighty Crunch (Onion + Tomato)",
+    description: "Extra crunchy base with your choice of onion & tomato toppings.",
     price: 139,
     category: Category.PIZZA,
-    image: 'https://images.unsplash.com/photo-1594007654729-407eedc4be65?auto=format&fit=crop&w=800&q=80',
+    image: "/images/mightycrunch.jpeg",
     vegetarian: true,
     available: true,
     sizes: [{ label: 'Regular', price: 139 }, { label: 'Medium', price: 279 }, { label: 'Large', price: 379 }]
   },
   {
     id: 'p4_cs',
-    name: "Chilli Shot (Onion / Capsicum)",
-    description: "Hot chilli infused base with crunchy onion or capsicum.",
+    name: "Chilli Shot (Onion + Capsicum)",
+    description: "Hot chilli infused base with crunchy onion & capsicum.",
     price: 139,
     category: Category.PIZZA,
-    image: 'https://images.unsplash.com/photo-1594007654729-407eedc4be65?auto=format&fit=crop&w=800&q=80',
+    image: "/images/chillishot.jpeg",
     vegetarian: true,
     available: true,
     spicy: true,
@@ -161,7 +184,7 @@ export const MENU_ITEMS: MenuItem[] = [
     description: "The absolute favorite for vegetable enthusiasts.",
     price: 139,
     category: Category.PIZZA,
-    image: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&w=800&q=80',
+    image: "/images/vegelover.jpeg",
     vegetarian: true,
     available: true,
     sizes: [{ label: 'Regular', price: 139 }, { label: 'Medium', price: 259 }, { label: 'Large', price: 379 }]
@@ -174,7 +197,7 @@ export const MENU_ITEMS: MenuItem[] = [
     description: "The ultimate signature masterpiece loaded with premium paneer, golden corn, tangy olives, and secret house spices. Truly because Hari knows best!",
     price: 219,
     category: Category.PIZZA,
-    image: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=800&q=80',
+    image: "/images/hari.jpeg",
     vegetarian: true,
     available: true,
     popular: true,
@@ -188,7 +211,7 @@ export const MENU_ITEMS: MenuItem[] = [
     description: "Delicate steamed veggie dumplings.",
     price: 40,
     category: Category.MOMOS_FRIES,
-    image: 'https://images.unsplash.com/photo-1625220194771-7ebdea0b70b9?auto=format&fit=crop&w=800&q=80',
+    image: "/images/steammomos.jpeg",
     vegetarian: true,
     available: true,
     sizes: [{ label: 'Half', price: 40 }, { label: 'Full', price: 60 }]
@@ -199,7 +222,7 @@ export const MENU_ITEMS: MenuItem[] = [
     description: "Steamed momos with protein-rich soya filling.",
     price: 30,
     category: Category.MOMOS_FRIES,
-    image: 'https://images.unsplash.com/photo-1625220194771-7ebdea0b70b9?auto=format&fit=crop&w=800&q=80',
+    image: "/images/steammomos.jpeg",
     vegetarian: true,
     available: true,
     sizes: [{ label: 'Half', price: 30 }, { label: 'Full', price: 50 }]
@@ -210,7 +233,7 @@ export const MENU_ITEMS: MenuItem[] = [
     description: "Crispy fried vegetable dumplings.",
     price: 40,
     category: Category.MOMOS_FRIES,
-    image: 'https://images.unsplash.com/photo-1541696432-82c6da8ce7bf?auto=format&fit=crop&w=800&q=80',
+    image: "/images/friedmomos.jpeg",
     vegetarian: true,
     available: true,
     sizes: [{ label: 'Half', price: 40 }, { label: 'Full', price: 60 }]
@@ -221,7 +244,7 @@ export const MENU_ITEMS: MenuItem[] = [
     description: "Golden fried soya dumplings.",
     price: 30,
     category: Category.MOMOS_FRIES,
-    image: 'https://images.unsplash.com/photo-1541696432-82c6da8ce7bf?auto=format&fit=crop&w=800&q=80',
+    image: "/images/friedmomos.jpeg",
     vegetarian: true,
     available: true,
     sizes: [{ label: 'Half', price: 30 }, { label: 'Full', price: 50 }]
@@ -232,7 +255,7 @@ export const MENU_ITEMS: MenuItem[] = [
     description: "Grilled veg momos in tandoori marinade.",
     price: 50,
     category: Category.MOMOS_FRIES,
-    image: 'https://images.unsplash.com/photo-1626074353765-517a681e40be?auto=format&fit=crop&w=800&q=80',
+    image: "/images/tandurimomos.jpeg",
     vegetarian: true,
     available: true,
     sizes: [{ label: 'Half', price: 50 }, { label: 'Full', price: 70 }]
@@ -243,7 +266,7 @@ export const MENU_ITEMS: MenuItem[] = [
     description: "Smoky tandoori soya momos.",
     price: 40,
     category: Category.MOMOS_FRIES,
-    image: 'https://images.unsplash.com/photo-1626074353765-517a681e40be?auto=format&fit=crop&w=800&q=80',
+    image: "/images/tandurimomos.jpeg",
     vegetarian: true,
     available: true,
     sizes: [{ label: 'Half', price: 40 }, { label: 'Full', price: 60 }]
@@ -254,7 +277,7 @@ export const MENU_ITEMS: MenuItem[] = [
     description: "Veg momos with a liquid cheese heart.",
     price: 70,
     category: Category.MOMOS_FRIES,
-    image: 'https://images.unsplash.com/photo-1625220194771-7ebdea0b70b9?auto=format&fit=crop&w=800&q=80',
+    image: "/images/cheesemomos.jpeg",
     vegetarian: true,
     available: true,
     sizes: [{ label: 'Half', price: 70 }, { label: 'Full', price: 100 }]
@@ -265,7 +288,7 @@ export const MENU_ITEMS: MenuItem[] = [
     description: "Soya momos stuffed with cheese.",
     price: 60,
     category: Category.MOMOS_FRIES,
-    image: 'https://images.unsplash.com/photo-1625220194771-7ebdea0b70b9?auto=format&fit=crop&w=800&q=80',
+    image: "/images/cheesemomos.jpeg",
     vegetarian: true,
     available: true,
     sizes: [{ label: 'Half', price: 60 }, { label: 'Full', price: 90 }]
@@ -276,7 +299,7 @@ export const MENU_ITEMS: MenuItem[] = [
     description: "Extra crispy breaded veg momos.",
     price: 70,
     category: Category.MOMOS_FRIES,
-    image: 'https://images.unsplash.com/photo-1541696432-82c6da8ce7bf?auto=format&fit=crop&w=800&q=80',
+    image: "/images/crunchymomos.jpeg",
     vegetarian: true,
     available: true,
     sizes: [{ label: 'Half', price: 70 }, { label: 'Full', price: 100 }]
@@ -287,7 +310,7 @@ export const MENU_ITEMS: MenuItem[] = [
     description: "Breaded crunchy soya dumplings.",
     price: 60,
     category: Category.MOMOS_FRIES,
-    image: 'https://images.unsplash.com/photo-1541696432-82c6da8ce7bf?auto=format&fit=crop&w=800&q=80',
+    image: "/images/crunchymomos.jpeg",
     vegetarian: true,
     available: true,
     sizes: [{ label: 'Half', price: 60 }, { label: 'Full', price: 90 }]
@@ -298,7 +321,7 @@ export const MENU_ITEMS: MenuItem[] = [
     description: "Veg momos tossed in spicy house gravy.",
     price: 80,
     category: Category.MOMOS_FRIES,
-    image: 'https://images.unsplash.com/photo-1625220194771-7ebdea0b70b9?auto=format&fit=crop&w=800&q=80',
+    image: "/images/gravymomos.jpeg",
     vegetarian: true,
     available: true,
     sizes: [{ label: 'Half', price: 80 }, { label: 'Full', price: 120 }]
@@ -309,7 +332,7 @@ export const MENU_ITEMS: MenuItem[] = [
     description: "Soya momos served in rich spicy gravy.",
     price: 70,
     category: Category.MOMOS_FRIES,
-    image: 'https://images.unsplash.com/photo-1625220194771-7ebdea0b70b9?auto=format&fit=crop&w=800&q=80',
+    image: "/images/gravymomos.jpeg",
     vegetarian: true,
     available: true,
     sizes: [{ label: 'Half', price: 70 }, { label: 'Full', price: 110 }]
@@ -322,7 +345,7 @@ export const MENU_ITEMS: MenuItem[] = [
     description: "Crispy fries with hot peri peri dust.",
     price: 50,
     category: Category.MOMOS_FRIES,
-    image: 'https://images.unsplash.com/photo-1573080496219-bb080dd4f877?auto=format&fit=crop&w=800&q=80',
+    image: "/images/periperi.jpeg",
     vegetarian: true,
     available: true,
     sizes: [{ label: 'Half', price: 50 }, { label: 'Full', price: 100 }]
@@ -333,7 +356,7 @@ export const MENU_ITEMS: MenuItem[] = [
     description: "Fries topped with melted cheese sauce.",
     price: 70,
     category: Category.MOMOS_FRIES,
-    image: 'https://images.unsplash.com/photo-1585109649139-366815a0d713?auto=format&fit=crop&w=800&q=80',
+    image: "/images/cheesefries.jpeg",
     vegetarian: true,
     available: true,
     sizes: [{ label: 'Half', price: 70 }, { label: 'Full', price: 140 }]
@@ -344,7 +367,7 @@ export const MENU_ITEMS: MenuItem[] = [
     description: "Fries with a smoky tandoori sauce.",
     price: 70,
     category: Category.MOMOS_FRIES,
-    image: 'https://images.unsplash.com/photo-1573080496219-bb080dd4f877?auto=format&fit=crop&w=800&q=80',
+    image: "/images/tandurifries.jpeg",
     vegetarian: true,
     available: true,
     sizes: [{ label: 'Half', price: 70 }, { label: 'Full', price: 140 }]
@@ -355,7 +378,7 @@ export const MENU_ITEMS: MenuItem[] = [
     description: "Loaded fries with fresh vegetable toppings.",
     price: 80,
     category: Category.MOMOS_FRIES,
-    image: 'https://images.unsplash.com/photo-1585109649139-366815a0d713?auto=format&fit=crop&w=800&q=80',
+    image: "/images/vegifries.jpeg",
     vegetarian: true,
     available: true,
     sizes: [{ label: 'Half', price: 80 }, { label: 'Full', price: 160 }]
@@ -366,21 +389,21 @@ export const MENU_ITEMS: MenuItem[] = [
     description: "Loaded fries with fresh vegetable toppings.",
     price: 80,
     category: Category.MOMOS_FRIES,
-    image: 'https://images.unsplash.com/photo-1585109649139-366815a0d713?auto=format&fit=crop&w=800&q=80',
+    image: "/images/infernofries.jpeg",
     vegetarian: true,
     available: true,
     sizes: [{ label: 'Half', price: 80 }, { label: 'Full', price: 160 }]
   },
 
   // --- BURGERS ---
-  { id: 'b_tk', name: "Tikka Burger", description: "Spicy tikka patty with premium mayo.", price: 40, category: Category.BURGERS, image: 'https://images.unsplash.com/photo-1550547660-d9450f859349?auto=format&fit=crop&w=800&q=80', vegetarian: true, available: true },
-  { id: 'b_cl', name: "Classic Burger", description: "The original veg burger experience.", price: 50, category: Category.BURGERS, image: 'https://images.unsplash.com/photo-1571091723244-13c5213d242f?auto=format&fit=crop&w=800&q=80', vegetarian: true, available: true },
-  { id: 'b_ch', name: "Cheese Burger", description: "Classic burger with extra cheese slice.", price: 60, category: Category.BURGERS, image: 'https://drive.google.com/file/d/1_0v4BfIfKQAVXdfuEkmLf0Et86eNfOZH/view?usp=drivesdk', vegetarian: true, available: true },
-  { id: 'b_pn', name: "Paneer Burger", description: "Fresh paneer slab with spicy sauce.", price: 60, category: Category.BURGERS, image: 'https://images.unsplash.com/photo-1571091723244-13c5213d242f?auto=format&fit=crop&w=800&q=80', vegetarian: true, available: true },
-  { id: 'b_td', name: "Tandoori Burger", description: "Smoky tandoori patty burger.", price: 60, category: Category.BURGERS, image: 'https://images.unsplash.com/photo-1550547660-d9450f859349?auto=format&fit=crop&w=800&q=80', vegetarian: true, available: true },
-  { id: 'b_cp', name: "Cheese & Paneer Burger", description: "Double the joy with cheese and paneer.", price: 70, category: Category.BURGERS, image: 'https://images.unsplash.com/photo-1571091723244-13c5213d242f?auto=format&fit=crop&w=800&q=80', vegetarian: true, available: true },
-  { id: 'b_in', name: "Inferno Burger", description: "Extremely spicy for the brave.", price: 70, category: Category.BURGERS, image: 'https://images.unsplash.com/photo-1550547660-d9450f859349?auto=format&fit=crop&w=800&q=80', vegetarian: true, available: true, spicy: true },
-  { id: 'b_cv', name: "Veg Carnival Burger", description: "Jumbo burger loaded with everything.", price: 90, category: Category.BURGERS, image: 'https://images.unsplash.com/photo-1571091723244-13c5213d242f?auto=format&fit=crop&w=800&q=80', vegetarian: true, available: true, popular: true },
+  { id: 'b_tk', name: "Tikka Burger", description: "Spicy tikka patty with premium mayo.", price: 40, category: Category.BURGERS, image: "/images/tikkaburger.jpeg", vegetarian: true, available: true },
+  { id: 'b_cl', name: "Classic Burger", description: "The original veg burger experience.", price: 50, category: Category.BURGERS, image: "/images/classicburger.jpeg", vegetarian: true, available: true },
+  { id: 'b_ch', name: "Cheese Burger", description: "Classic burger with extra cheese slice.", price: 60, category: Category.BURGERS, image: "/images/cheeseburger.jpeg", vegetarian: true, available: true },
+  { id: 'b_pn', name: "Paneer Burger", description: "Fresh paneer slab with spicy sauce.", price: 60, category: Category.BURGERS, image: "/images/paneerburger.jpeg", vegetarian: true, available: true },
+  { id: 'b_td', name: "Tandoori Burger", description: "Smoky tandoori patty burger.", price: 60, category: Category.BURGERS, image: "/images/tanduriburger.jpeg", vegetarian: true, available: true },
+  { id: 'b_cp', name: "Cheese & Paneer Burger", description: "Double the joy with cheese and paneer.", price: 70, category: Category.BURGERS, image: "/images/cheesepaneerburger.jpeg", vegetarian: true, available: true },
+  { id: 'b_in', name: "Inferno Burger", description: "Extremely spicy for the brave.", price: 70, category: Category.BURGERS, image: "/images/infernoburger.jpeg", vegetarian: true, available: true, spicy: true },
+  { id: 'b_cv', name: "Veg Carnival Burger", description: "Jumbo burger loaded with everything.", price: 90, category: Category.BURGERS, image: "/images/vegcarnival.jpeg", vegetarian: true, available: true, popular: true },
 
   // --- SIDE ORDERS & SNACKS ---
   { id: 's_cl', name: "Choco Lava Cake", description: "Molten chocolate center cake.", price: 60, category: Category.SIDES, image: 'https://images.unsplash.com/photo-1624353365286-3f8d62daad51?auto=format&fit=crop&w=800&q=80', vegetarian: true, available: true },
@@ -418,13 +441,13 @@ export const MENU_ITEMS: MenuItem[] = [
     description: "Iced creamy coffee blend.",
     price: 70,
     category: Category.BEVERAGES,
-    image: 'https://images.unsplash.com/photo-1559496417-e7f25cb247f3?auto=format&fit=crop&w=800&q=80',
+    image: "/images/coldcoffee.jpeg",
     vegetarian: true,
     available: true,
     sizes: [{ label: 'Regular', price: 70 }, { label: 'Large', price: 100 }]
   },
-  { id: 'd_vm', name: "Virgin Mojito", description: "Mint and lime refresher.", price: 100, category: Category.BEVERAGES, image: 'https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?auto=format&fit=crop&w=800&q=80', vegetarian: true, available: true },
-  { id: 'd_cm', name: "Curacao Mojito", description: "Blue orange citrus mojito.", price: 100, category: Category.BEVERAGES, image: 'https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?auto=format&fit=crop&w=800&q=80', vegetarian: true, available: true }
+  { id: 'd_vm', name: "Virgin Mojito", description: "Mint and lime refresher.", price: 100, category: Category.BEVERAGES, image: "/images/virgin.jpeg", vegetarian: true, available: true },
+  { id: 'd_cm', name: "Curacao Mojito", description: "Blue orange citrus mojito.", price: 100, category: Category.BEVERAGES, image: "/images/blue.jpeg", vegetarian: true, available: true }
 ];
 
 export const SYSTEM_INSTRUCTION = `
