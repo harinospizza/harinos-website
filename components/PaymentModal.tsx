@@ -22,10 +22,10 @@ const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose, total, onP
   };
 
   const paymentApps = [
-    { name: 'PhonePe', icon: 'https://cdn.cdnlogo.com/logos/p/75/phonepe.svg', color: 'bg-[#5f259f]', scheme: 'Phonepe' },
-    { name: 'GPay', icon: 'https://logo.clearbit.com/googlepay.com', color: 'bg-[#5f259f]', scheme: 'Gpay' },
-    { name: 'Paytm', icon: 'https://logo.clearbit.com/paytm.com', color: 'bg-[#00baf2]', scheme: 'paytm' },
-  ];
+  { name: 'PhonePe', icon: 'https://upload.wikimedia.org/wikipedia/commons/0/09/PhonePe_Logo.svg' },
+  { name: 'GPay',    icon: 'https://upload.wikimedia.org/wikipedia/commons/2/2f/Google_Pay_Logo.svg' },
+  { name: 'Paytm',   icon: 'https://upload.wikimedia.org/wikipedia/commons/5/55/Paytm_Logo.svg' },
+];
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
@@ -44,7 +44,7 @@ const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose, total, onP
               {/* This is where the QR code from the user image would be displayed */}
               <div className="w-48 h-48 bg-white rounded-2xl flex items-center justify-center shadow-inner overflow-hidden">
                 <img 
-                  src="public/images/PaymentQR.jpeg://pay?pa=Q682142711@ybl%26pn=Harino's%20Outlet%26am=0%26cu=INR" 
+                  src="/images/PaymentQR.jpeg" 
                   alt="Payment QR" 
                   className="w-40 h-40 opacity-80 group-hover:opacity-100 transition-opacity"
                 />
@@ -64,7 +64,11 @@ const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose, total, onP
                   href={getUpiUrl('generic')}
                   className="flex flex-col items-center p-4 rounded-2xl border border-slate-100 hover:border-red-100 hover:bg-red-50/50 transition-all group"
                 >
-                  <span className="text-2xl mb-2 group-hover:scale-110 transition-transform">{app.icon}</span>
+                  <img
+  src={app.icon}
+  alt={app.name}
+  className="w-10 h-10 p-1 bg-white rounded-lg object-contain mb-2 shadow-sm group-hover:scale-110 transition-transform"
+/>
                   <span className="text-[10px] font-bold text-slate-600 uppercase tracking-widest">{app.name}</span>
                 </a>
               ))}
