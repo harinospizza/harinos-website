@@ -44,7 +44,7 @@ const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose, total, onP
               {/* This is where the QR code from the user image would be displayed */}
               <div className="w-48 h-48 bg-white rounded-2xl flex items-center justify-center shadow-inner overflow-hidden">
                 <img 
-                  src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=upi://pay?pa=7818958571@ybl%26pn=Harino's%20Outlet%26am=0%26cu=INR" 
+                  src="https://drive.google.com/file/d/10lEK2sd2C6msOnSXeUgYOkhQP_430m8-/view?usp=drive_link://pay?pa=Q682142711@ybl%26pn=Harino's%20Outlet%26am=0%26cu=INR" 
                   alt="Payment QR" 
                   className="w-40 h-40 opacity-80 group-hover:opacity-100 transition-opacity"
                 />
