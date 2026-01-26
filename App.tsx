@@ -161,14 +161,13 @@ const filteredItems = useMemo(() => {
     ? MENU_ITEMS
     : MENU_ITEMS.filter(item => item.category === selectedCategory);
 
-  // Business rule: Beverages only for dine-in
-  if (orderType !== 'dinein') {
-    items = items.filter(item => item.category !== Category.BEVERAGES);
-  }
+  const filteredItems = useMemo(() => {
+  let items = selectedCategory === 'All'
+    ? MENU_ITEMS
+    : MENU_ITEMS.filter(item => item.category === selectedCategory);
 
   return items;
-}, [selectedCategory, orderType]);
-
+}, [selectedCategory]);
   console.log("Selected:", selectedCategory);
 console.log("Filtered:", filteredItems.map(i => i.name));
 
@@ -193,7 +192,14 @@ console.log("Filtered:", filteredItems.map(i => i.name));
   }, [orderType, distance, cart]);
 
   const addToCart = (item: MenuItem, selectedSize?: string) => {
-    if (!item.available) return;
+  // Hard business rule
+  if (item.category === Category.BEVERAGES && orderType !== 'dinein') {
+    showNotification("🥤 Beverages are available for Dine-in only");
+    return;
+  }
+
+  if (!item.available) return;
+
     const discountedPrice = getEffectivePrice(item, selectedSize);
     setCart(prev => {
       const cartItemId = selectedSize ? `${item.id}-${selectedSize}` : item.id;
