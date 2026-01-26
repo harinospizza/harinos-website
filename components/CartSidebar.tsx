@@ -63,16 +63,37 @@ const CartSidebar: React.FC<CartSidebarProps> = ({
           </div>
 
           <div className="p-4 md:p-6 bg-slate-50/50">
-             <div className="flex bg-white p-1.5 rounded-2xl shadow-inner border border-slate-100 mb-4">
-                <button 
-                  onClick={() => setOrderType('takeaway')} 
-                  className={`flex-1 py-3 px-4 rounded-xl text-[9px] md:text-[10px] font-black uppercase tracking-widest transition-all ${orderType === 'takeaway' ? 'bg-red-600 text-white shadow-lg' : 'text-slate-400'}`}
-                >Takeaway</button>
-                <button 
-                  onClick={() => setOrderType('delivery')} 
-                  className={`flex-1 py-3 px-4 rounded-xl text-[9px] md:text-[10px] font-black uppercase tracking-widest transition-all ${orderType === 'delivery' ? 'bg-red-600 text-white shadow-lg' : 'text-slate-400'}`}
-                >Delivery</button>
-              </div>
+            <div className="flex bg-white p-1.5 rounded-2xl shadow-inner border border-slate-100 mb-4">
+  
+  <button 
+    onClick={() => setOrderType('takeaway')} 
+    className={`flex-1 py-3 px-2 rounded-xl text-[9px] md:text-[10px] font-black uppercase tracking-widest transition-all ${
+      orderType === 'takeaway' ? 'bg-red-600 text-white shadow-lg' : 'text-slate-400'
+    }`}
+  >
+    Takeaway
+  </button>
+
+  <button 
+    onClick={() => setOrderType('delivery')} 
+    className={`flex-1 py-3 px-2 rounded-xl text-[9px] md:text-[10px] font-black uppercase tracking-widest transition-all ${
+      orderType === 'delivery' ? 'bg-red-600 text-white shadow-lg' : 'text-slate-400'
+    }`}
+  >
+    Delivery
+  </button>
+
+  <button 
+    onClick={() => setOrderType('dinein')} 
+    className={`flex-1 py-3 px-2 rounded-xl text-[9px] md:text-[10px] font-black uppercase tracking-widest transition-all ${
+      orderType === 'dinein' ? 'bg-red-600 text-white shadow-lg' : 'text-slate-400'
+    }`}
+  >
+    Dine-in
+  </button>
+
+</div>
+
 
               {orderType === 'delivery' && (
                 <div className="space-y-3">
