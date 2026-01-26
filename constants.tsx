@@ -184,7 +184,7 @@ export const MENU_ITEMS: MenuItem[] = [
     description: "The absolute favorite for vegetable enthusiasts.",
     price: 139,
     category: Category.PIZZA,
-    image: "/images/vegelover.jpeg",
+    image: "/images/veglover.jpeg",
     vegetarian: true,
     available: true,
     sizes: [{ label: 'Regular', price: 139 }, { label: 'Medium', price: 259 }, { label: 'Large', price: 379 }]
