@@ -161,13 +161,14 @@ const filteredItems = useMemo(() => {
     ? MENU_ITEMS
     : MENU_ITEMS.filter(item => item.category === selectedCategory);
 
-  const filteredItems = useMemo(() => {
-  let items = selectedCategory === 'All'
-    ? MENU_ITEMS
-    : MENU_ITEMS.filter(item => item.category === selectedCategory);
+  // Business rule: Beverages only for dine-in
+  if (orderType !== 'dinein') {
+    items = items.filter(item => item.category !== Category.BEVERAGES);
+  }
 
   return items;
-}, [selectedCategory]);
+}, [selectedCategory, orderType]);
+
   console.log("Selected:", selectedCategory);
 console.log("Filtered:", filteredItems.map(i => i.name));
 
