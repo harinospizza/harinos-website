@@ -98,11 +98,26 @@ const App: React.FC = () => {
   }, []);
 
   const handleOrderTypeChange = async (type: OrderType) => {
-    setOrderType(type);
-    if (type === 'delivery' && distance === null) {
-      await detectLocation();
-    }
-  };
+  setOrderType(type);
+
+  // If switching away from dine-in, remove beverages from cart
+  if (type !== 'dinein') {
+    setCart(prev => {
+      const filtered = prev.filter(item => item.category !== Category.BEVERAGES);
+
+      if (filtered.length !== prev.length) {
+        showNotification("Beverages removed – available for Dine-In only.");
+      }
+
+      return filtered;
+    });
+  }
+
+  if (type === 'delivery' && distance === null) {
+    await detectLocation();
+  }
+};
+
 
   const showNotification = (msg: string) => {
     setNotification(msg);
@@ -160,11 +175,6 @@ const filteredItems = useMemo(() => {
   let items = selectedCategory === 'All'
     ? MENU_ITEMS
     : MENU_ITEMS.filter(item => item.category === selectedCategory);
-
-  // Business rule: Beverages only for dine-in
-  if (orderType !== 'dinein') {
-    items = items.filter(item => item.category !== Category.BEVERAGES);
-  }
 
   return items;
 }, [selectedCategory, orderType]);
