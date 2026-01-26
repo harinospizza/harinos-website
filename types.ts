@@ -55,4 +55,4 @@ export interface ChatMessage {
   text: string;
 }
 
-export type OrderType = 'takeaway' | 'delivery';
+export type OrderType = 'takeaway' | 'delivery' | 'dinein';
