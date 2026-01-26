@@ -46,7 +46,7 @@ const App: React.FC = () => {
       const mins = now.getMinutes();
       const currentTimeInMins = hour * 60 + mins;
 
-      const openingTime = 08 * 60;
+      const openingTime = 8 * 60;
       const closingTime = 21 * 60;
 
       if (currentTimeInMins < openingTime || currentTimeInMins >= closingTime) {
