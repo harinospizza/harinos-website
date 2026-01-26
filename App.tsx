@@ -390,7 +390,7 @@ ${locationString}
                   <span className="text-amber-600 font-bold text-sm">Outlet Closed • {statusMessage}</span>
                 </div>
               )}
-              <MenuSection items={filteredItems} onAddToCart={addToCart} activeOffers={OFFERS} />
+              <MenuSection items={filteredItems} onAddToCart={addToCart} activeOffers={OFFERS} orderType={orderType}/>
             </div>
           </>
         ) : (
