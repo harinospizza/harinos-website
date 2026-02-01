@@ -418,7 +418,7 @@ export const MENU_ITEMS: MenuItem[] = [
     image: "/images/zingi.jpeg",
     vegetarian: true,
     available: true,
-    sizes: [{ label: 'Half', price: 70 }, { label: 'Full', price: 130 }]
+    sizes: [{ label: '2-Pieces', price: 70 }, { label: '4-Pieces', price: 130 }]
   },
   {
     id: 's_cz',
@@ -429,7 +429,7 @@ export const MENU_ITEMS: MenuItem[] = [
     image: "/images/calzone.jpeg",
     vegetarian: true,
     available: true,
-    sizes: [{ label: 'Half', price: 70 }, { label: 'Full', price: 130 }]
+    sizes: [{ label: '1-Piece', price: 70 }, { label: '2-Pieces', price: 130 }]
   },
   { id: 's_cp', name: "Chilli Potato", description: "Crispy honey chilli glazed potato fingers.", price: 90, category: Category.SIDES, image: "/images/chillipotato.jpeg", vegetarian: true, available: true },
   { id: 's_hp', name: "Honey Chilli Potato", description: "Sweet and spicy crispy potato snack.", price: 100, category: Category.SIDES, image: "/images/chillipotato.jpeg", vegetarian: true, available: true },
