@@ -27,7 +27,7 @@ export const MENU_ITEMS: MenuItem[] = [
   {
     id: 'p1_t',
     name: "Cheese & Tomato",
-    description: "Your choice of juicy tomatoes or crisp capsicum with a double layer of cheese.",
+    description: "Your choice of juicy tomatoes with a double layer of cheese.",
     price: 119,
     category: Category.PIZZA,
     image: "/images/cheesetomato.jpeg",
@@ -133,7 +133,7 @@ export const MENU_ITEMS: MenuItem[] = [
   {
     id: 'p3_vo',
     name: "Veg Overloaded",
-    description: "A mountain of fresh vegetables, olives, and extra cheese.",
+    description: "A mountain of fresh vegetables, corn, and extra cheese.",
     price: 169,
     category: Category.PIZZA,
     image: "/images/vegover.jpeg",
