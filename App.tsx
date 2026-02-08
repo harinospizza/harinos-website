@@ -46,12 +46,12 @@ const App: React.FC = () => {
       const mins = now.getMinutes();
       const currentTimeInMins = hour * 60 + mins;
 
-      const openingTime = 12 * 60;
+      const openingTime = 11 * 60;
       const closingTime = 20 * 60;
 
       if (currentTimeInMins < openingTime || currentTimeInMins >= closingTime) {
         setIsStoreOpen(false);
-        setStatusMessage("Store is currently closed. Open: 12:00 PM - 08:00 PM.");
+        setStatusMessage("Store is currently closed. Open: 11:00 AM - 08:00 PM.");
       } else {
         setIsStoreOpen(true);
         setStatusMessage("");
