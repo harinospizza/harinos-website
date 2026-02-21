@@ -63,37 +63,58 @@ const CartSidebar: React.FC<CartSidebarProps> = ({
           </div>
 
           <div className="p-4 md:p-6 bg-slate-50/50">
-            <div className="flex bg-white p-1.5 rounded-2xl shadow-inner border border-slate-100 mb-4">
+
+<div className="grid grid-cols-3 gap-3 mb-6">
   
-  <button 
-    onClick={() => setOrderType('takeaway')} 
-    className={`flex-1 py-3 px-2 rounded-xl text-[9px] md:text-[10px] font-black uppercase tracking-widest transition-all ${
-      orderType === 'takeaway' ? 'bg-red-600 text-white shadow-lg' : 'text-slate-400'
+  {/* TAKEAWAY */}
+  <button
+    onClick={() => setOrderType('takeaway')}
+    className={`relative p-4 rounded-2xl border-2 transition-all ${
+      orderType === 'takeaway'
+        ? 'border-red-600 bg-red-50'
+        : 'border-slate-200 bg-white'
     }`}
   >
-    Takeaway
+    <div className="text-3xl mb-2">🥡</div>
+    <div className="text-[11px] font-black tracking-widest">TAKEAWAY</div>
+    <div className="text-[9px] text-slate-400">Fastest</div>
+
+    {orderType === 'takeaway' && (
+      <div className="absolute -top-2 -right-2 bg-red-600 text-white text-[8px] px-2 py-1 rounded-full">
+        FASTEST
+      </div>
+    )}
   </button>
 
-  <button 
-    onClick={() => setOrderType('delivery')} 
-    className={`flex-1 py-3 px-2 rounded-xl text-[9px] md:text-[10px] font-black uppercase tracking-widest transition-all ${
-      orderType === 'delivery' ? 'bg-red-600 text-white shadow-lg' : 'text-slate-400'
+  {/* DELIVERY */}
+  <button
+    onClick={() => setOrderType('delivery')}
+    className={`p-4 rounded-2xl border-2 transition-all ${
+      orderType === 'delivery'
+        ? 'border-red-600 bg-red-50'
+        : 'border-slate-200 bg-white'
     }`}
   >
-    Delivery
+    <div className="text-3xl mb-2">🚚</div>
+    <div className="text-[11px] font-black tracking-widest">DELIVERY</div>
+    <div className="text-[9px] text-slate-400">Home</div>
   </button>
 
-  <button 
-    onClick={() => setOrderType('dinein')} 
-    className={`flex-1 py-3 px-2 rounded-xl text-[9px] md:text-[10px] font-black uppercase tracking-widest transition-all ${
-      orderType === 'dinein' ? 'bg-red-600 text-white shadow-lg' : 'text-slate-400'
+  {/* DINEIN */}
+  <button
+    onClick={() => setOrderType('dinein')}
+    className={`p-4 rounded-2xl border-2 transition-all ${
+      orderType === 'dinein'
+        ? 'border-red-600 bg-red-50'
+        : 'border-slate-200 bg-white'
     }`}
   >
-    Dine-in
+    <div className="text-3xl mb-2">🍽️</div>
+    <div className="text-[11px] font-black tracking-widest">DINE-IN</div>
+    <div className="text-[9px] text-slate-400">At outlet</div>
   </button>
 
 </div>
-
 
               {orderType === 'delivery' && (
                 <div className="space-y-3">
