@@ -52,12 +52,15 @@ const CartSidebar: React.FC<CartSidebarProps> = ({
         className={`fixed top-0 right-0 h-full w-full md:max-w-md bg-white z-[80] shadow-[0_0_100px_rgba(0,0,0,0.3)] transition-transform duration-700 cubic-bezier(0.4, 0, 0.2, 1) transform ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}
       >
         <div className="flex flex-col h-full overflow-hidden">
-          <div className="p-6 md:p-8 border-b border-slate-50 flex justify-between items-end">
+          <div className="pt-[max(env(safe-area-inset-top),16px)] px-6 md:px-8 pb-4 border-b border-slate-50 flex justify-between items-center">
             <div>
               <div className="text-[9px] font-black text-red-600 uppercase tracking-[0.3em] mb-1">Your Basket</div>
               <h2 className="text-3xl md:text-4xl font-display font-bold text-slate-900">Checkout</h2>
             </div>
-            <button onClick={onClose} className="w-10 h-10 md:w-12 md:h-12 flex items-center justify-center hover:bg-slate-50 rounded-2xl text-slate-400 transition-colors">
+            <button
+  onClick={onClose}
+  className="w-11 h-11 flex items-center justify-center rounded-full bg-white shadow-md border border-slate-200 text-slate-600 active:scale-90"
+>
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12" /></svg>
             </button>
           </div>
