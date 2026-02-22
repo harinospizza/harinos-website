@@ -47,7 +47,7 @@ const App: React.FC = () => {
       const currentTimeInMins = hour * 60 + mins;
 
       const openingTime = 11 * 60;
-      const closingTime = 20 * 60;
+      const closingTime = 21 * 60;
 
       if (currentTimeInMins < openingTime || currentTimeInMins >= closingTime) {
         setIsStoreOpen(false);
