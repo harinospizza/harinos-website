@@ -53,7 +53,7 @@ const App: React.FC = () => {
         setIsStoreOpen(false);
         setStatusMessage("Store is currently closed. Open: 11:00 AM - 08:00 PM.");
       } else {
-        setIsStoreOpen(false);
+        setIsStoreOpen(true);
         setStatusMessage("");
       }
     };
