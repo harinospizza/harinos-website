@@ -80,7 +80,7 @@ const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose, total, onP
               onClick={onPaymentComplete}
               className="w-full py-5 bg-red-600 hover:bg-red-700 text-white rounded-2xl font-bold uppercase tracking-[0.2em] text-xs shadow-xl transition-all transform hover:scale-[1.02] active:scale-95 flex items-center justify-center space-x-3"
             >
-              <span>I Have Paid & Continue</span>
+              <span>Pay Cash & Continue</span>
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" />
               </svg>
