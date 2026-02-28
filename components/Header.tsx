@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { NotificationService } from '../services/notification';
 
 interface HeaderProps {
@@ -14,6 +14,7 @@ interface HeaderProps {
 const Header: React.FC<HeaderProps> = ({ cartCount, onCartClick, onViewOrders, onViewMenu, activeView, onShare }) => {
   const [scrolled, setScrolled] = useState(false);
   const [notifStatus, setNotifStatus] = useState<NotificationPermission>('default');
+  const holdTimer = useRef<number | null>(null);
   const logoUrl = "https://drive.google.com/thumbnail?id=1Gz7Qi82EYLJZxm1EfFxpXHHQ6mhKQIc4&sz=w500";
 
   useEffect(() => {
@@ -33,14 +34,33 @@ const Header: React.FC<HeaderProps> = ({ cartCount, onCartClick, onViewOrders, o
       NotificationService.show("Alerts Enabled!", "You will now receive order updates and special offers. 🔔");
     }
   };
+const startHold = () => {
+  holdTimer.current = window.setTimeout(() => {
+    window.location.href = "/admin-login";
+  }, 15000); // 15 seconds
+};
 
+const endHold = () => {
+  if (holdTimer.current) {
+    clearTimeout(holdTimer.current);
+    holdTimer.current = null;
+  }
+};
   const isScrolledOrLight = scrolled || activeView === 'orders';
 
   return (
     <nav className={`fixed top-0 w-full z-[100] transition-all duration-500 ${isScrolledOrLight ? 'bg-white shadow-xl py-2' : 'bg-transparent py-8'}`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center">
-          <div className="flex items-center space-x-3 cursor-pointer group" onClick={onViewMenu}>
+          <div
+  className="flex items-center space-x-3 cursor-pointer group"
+  onClick={onViewMenu}
+  onMouseDown={startHold}
+  onMouseUp={endHold}
+  onMouseLeave={endHold}
+  onTouchStart={startHold}
+  onTouchEnd={endHold}
+>
             <div className={`transition-all duration-500 rounded-2xl flex items-center justify-center overflow-hidden shadow-xl ring-4 ring-white/10 ${isScrolledOrLight ? 'w-10 h-10' : 'w-14 h-14'}`}>
               <img src={logoUrl} alt="Harino's" className="w-full h-full object-cover group-hover:scale-110 transition-transform" />
             </div>
