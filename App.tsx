@@ -1,4 +1,6 @@
-
+import AdminLogin from "./components/AdminLogin";
+import AdminPanel from "./components/AdminPanel";
+import StaffPanel from "./components/StaffPanel";
 import React, { useState, useMemo, useEffect, useCallback, useRef } from 'react';
 import { Category, MenuItem, CartItem, OrderType, Order, Offer } from './types';
 import { MENU_ITEMS, OFFERS } from './constants';
@@ -17,6 +19,9 @@ const OUTLET_LAT = 28.011897;
 const OUTLET_LNG = 77.675534;
 
 const App: React.FC = () => {
+  const [showLogin, setShowLogin] = useState(false);
+  const [adminMode, setAdminMode] = useState(false);
+  const [staffMode, setStaffMode] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<Category | 'All'>('All');
   const [cart, setCart] = useState<CartItem[]>(() => StorageService.getCart());
   const [isCartOpen, setIsCartOpen] = useState(false);
