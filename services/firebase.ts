@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app";
-import { getFirestore, collection, addDoc } from "firebase/firestore";
+import { getFirestore, collection, addDoc, serverTimestamp } from "firebase/firestore";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCP-DIWSWFo_iBNqFPfMulCFi9_ahO3Ik0",
@@ -13,13 +13,14 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 
-// Firestore DB
 export const db = getFirestore(app);
 
-// Save order
 export const saveOrderToFirebase = async (orderData: any) => {
   try {
-    await addDoc(collection(db, "orders"), orderData);
+    await addDoc(collection(db, "orders"), {
+      ...orderData,
+      createdAt: serverTimestamp()
+    });
     console.log("Order saved to Firestore");
   } catch (error) {
     console.error("Firebase error:", error);
