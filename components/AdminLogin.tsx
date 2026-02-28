@@ -1,74 +1,106 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { collection, onSnapshot, doc, updateDoc } from "firebase/firestore";
+import { db } from "../services/firebase";
 
-interface Props {
-  isOpen: boolean;
-  onClose: () => void;
-  onSuccess: (role: "admin" | "staff") => void;
+interface OrderItem {
+  name: string;
+  quantity: number;
+  totalPrice: number;
 }
 
-const AdminLogin: React.FC<Props> = ({ isOpen, onClose, onSuccess }) => {
-  const [id, setId] = useState("");
-  const [pass, setPass] = useState("");
-  const [error, setError] = useState("");
+interface Order {
+  id: string;
+  items: OrderItem[];
+  total: number;
+  orderType: string;
+  date: string;
+  deliveryFee?: number;
+  location?: string;
+  status?: string;
+}
 
-  if (!isOpen) return null;
+const AdminPanel: React.FC = () => {
+  const [orders, setOrders] = useState<Order[]>([]);
 
-  const handleLogin = () => {
-    if (id === "Harino's" && pass === "Pratim@nuj") {
-      onSuccess("admin");
-    } else if (id === "Harinos" && pass === "Staff_harinos") {
-      onSuccess("staff");
-    } else {
-      setError("Invalid credentials");
-    }
+  useEffect(() => {
+    const unsub = onSnapshot(collection(db, "orders"), (snap) => {
+      const list: Order[] = snap.docs.map((d) => ({
+        id: d.id,
+        ...(d.data() as any),
+      }));
+      setOrders(list.reverse());
+    });
+
+    return () => unsub();
+  }, []);
+
+  const updateStatus = async (id: string, status: string) => {
+    await updateDoc(doc(db, "orders", id), { status });
   };
 
   return (
-    <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/70 backdrop-blur-sm">
-      <div className="bg-white rounded-3xl shadow-2xl w-[90%] max-w-sm p-8 relative">
-        
-        {/* Close */}
-        <button
-          onClick={onClose}
-          className="absolute top-4 right-4 text-slate-400 hover:text-red-500"
-        >
-          ✕
-        </button>
+    <div className="min-h-screen bg-slate-100 p-6">
+      <h1 className="text-3xl font-bold mb-6">Admin Panel</h1>
 
-        <h2 className="text-2xl font-bold mb-6 text-center">
-          Harino's Panel Login
-        </h2>
+      <div className="grid gap-4">
+        {orders.map((o) => (
+          <div key={o.id} className="bg-white rounded-2xl shadow p-4 border">
+            <div className="flex justify-between mb-2">
+              <span className="font-bold">#{o.id}</span>
+              <span className="text-sm">{o.date}</span>
+            </div>
 
-        <input
-          placeholder="Login ID"
-          value={id}
-          onChange={(e) => setId(e.target.value)}
-          className="w-full mb-4 px-4 py-3 rounded-xl border border-slate-200"
-        />
+            <div className="text-sm mb-2">
+              Type: <b>{o.orderType}</b>
+            </div>
 
-        <input
-          type="password"
-          placeholder="Password"
-          value={pass}
-          onChange={(e) => setPass(e.target.value)}
-          className="w-full mb-4 px-4 py-3 rounded-xl border border-slate-200"
-        />
+            <div className="mb-2">
+              {o.items?.map((i, idx) => (
+                <div key={idx} className="text-sm">
+                  {i.quantity} × {i.name}
+                </div>
+              ))}
+            </div>
 
-        {error && (
-          <div className="text-red-600 text-sm mb-4 text-center">
-            {error}
+            <div className="font-bold mb-2">₹{o.total}</div>
+
+            {o.location && (
+              <a
+                href={o.location}
+                target="_blank"
+                className="text-blue-600 text-sm underline"
+              >
+                View Location
+              </a>
+            )}
+
+            <div className="flex gap-2 mt-3">
+              <button
+                onClick={() => updateStatus(o.id, "preparing")}
+                className="px-3 py-1 bg-yellow-400 rounded"
+              >
+                Preparing
+              </button>
+
+              <button
+                onClick={() => updateStatus(o.id, "ready")}
+                className="px-3 py-1 bg-green-500 text-white rounded"
+              >
+                Ready
+              </button>
+
+              <button
+                onClick={() => updateStatus(o.id, "completed")}
+                className="px-3 py-1 bg-slate-800 text-white rounded"
+              >
+                Done
+              </button>
+            </div>
           </div>
-        )}
-
-        <button
-          onClick={handleLogin}
-          className="w-full py-3 bg-red-600 text-white rounded-xl font-bold"
-        >
-          Login
-        </button>
+        ))}
       </div>
     </div>
   );
 };
 
-export default AdminLogin;
+export default AdminPanel;
