@@ -32,7 +32,7 @@ const App: React.FC = () => {
   const [loyaltyPoints, setLoyaltyPoints] = useState(StorageService.getLoyaltyPoints());
   const [orderType, setOrderType] = useState<OrderType>('takeaway');
   const [distance, setDistance] = useState<number | null>(null);
-  const [view, setView] = useState<'menu' | 'orders'>('menu');
+  const [view, setView] = useState<'menu' | 'orders' | 'admin-login' | 'admin' | 'staff'>('menu');
   const [pastOrders, setPastOrders] = useState<Order[]>(StorageService.getPastOrders());
   
   const [isStoreOpen, setIsStoreOpen] = useState(true);
@@ -76,6 +76,13 @@ const App: React.FC = () => {
       clearTimeout(offerTimer);
     };
   }, []);
+
+  // Admin login URL detector
+useEffect(() => {
+  if (window.location.pathname === "/admin-login") {
+    setView("admin-login");
+  }
+}, []);
 
   const calculateDistance = (lat: number, lng: number) => {
     const R = 6371; 
