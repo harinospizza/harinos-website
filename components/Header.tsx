@@ -52,8 +52,7 @@ const endHold = () => {
     <nav className={`fixed top-0 w-full z-[100] transition-all duration-500 ${isScrolledOrLight ? 'bg-white shadow-xl py-2' : 'bg-transparent py-8'}`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center">
-          <div
-  className="flex items-center space-x-3 cursor-pointer group"
+          <div className="flex items-center space-x-3 cursor-pointer group"
   onClick={onViewMenu}
   onMouseDown={startHold}
   onMouseUp={endHold}
