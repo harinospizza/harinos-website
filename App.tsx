@@ -8,6 +8,7 @@ import Header from './components/Header';
 import Hero from './components/Hero';
 import MenuSection from './components/MenuSection';
 import CartSidebar from './components/CartSidebar';
+import { saveOrderToFirebase } from "./services/firebase";
 
 import PastOrders from './components/PastOrders';
 import PaymentModal from './components/PaymentModal';
@@ -319,6 +320,15 @@ console.log("Filtered:", filteredItems.map(i => i.name));
       orderType,
       deliveryFee: finalDelFee
     };
+    await saveOrderToFirebase({
+  orderId,
+  items: cart,
+  total: currentTotal,
+  orderType,
+  deliveryFee: finalDelFee,
+  location: locationString,
+  createdAt: new Date().toISOString()
+});
     StorageService.saveOrder(newOrder);
     setPastOrders(prev => [newOrder, ...prev]);
     NotificationService.simulateOrderStatus(orderId, orderType);
