@@ -140,7 +140,7 @@ useEffect(() => {
   const handleShare = async () => {
     const shareData = {
       title: "Harino's Pizza",
-      text: "Check out Harino's - Handcrafted Pizza! Because Hari Knows.",
+      text: "अब पिज्जा ऑर्डर करना हुआ और भी आसान 😋 Check out Harino's - Handcrafted Pizza! Because Hari Knows.",
       url: "https://harinos.store"
     };
 
