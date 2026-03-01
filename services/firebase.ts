@@ -27,3 +27,17 @@ export const saveOrderToFirebase = async (orderData: any) => {
     console.error("Firebase error:", error);
   }
 };
+import { collection, query, orderBy, onSnapshot } from "firebase/firestore";
+import { db } from "./firebase";
+
+export const subscribeToOrders = (callback: (orders: any[]) => void) => {
+  const q = query(collection(db, "orders"), orderBy("createdAt", "desc"));
+
+  return onSnapshot(q, (snapshot) => {
+    const orders = snapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    }));
+    callback(orders);
+  });
+};
