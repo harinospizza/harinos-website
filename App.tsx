@@ -387,7 +387,25 @@ ${locationString}
     [Category.BEVERAGES]: '🥤',
     'All': '✨'
   };
+// ===== ADMIN / STAFF VIEW ROUTING =====
+if (view === "admin-login") {
+  return (
+    <AdminLogin
+      onAdmin={() => setView("admin")}
+      onStaff={() => setView("staff")}
+      onClose={() => setView("menu")}
+    />
+  );
+}
 
+if (view === "admin") {
+  return <AdminPanel />;
+}
+
+if (view === "staff") {
+  return <StaffPanel />;
+}
+// ===== END ADMIN ROUTING =====
   return (
     <div className="min-h-screen bg-slate-50/30 text-slate-900 overflow-x-hidden">
       <Header 
