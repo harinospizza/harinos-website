@@ -200,8 +200,8 @@ console.log("Filtered:", filteredItems.map(i => i.name));
     if (orderType === 'takeaway' || distance === null) return 0;
     const currentSubtotal = cart.reduce((sum, item) => sum + item.totalPrice, 0);
     
-    // Unserviceable beyond 7km
-    if (distance > 7) return -1; 
+    // Unserviceable beyond 5km
+    if (distance > 5) return -1; 
 
     // Logic based on user request:
     // If subtotal < 150, Rs 15 added starting from 1km
