@@ -2,13 +2,13 @@
 import { MenuItem, Category, Offer } from './types';
 
 export const OFFERS: Offer[] = [
-  {
-    id: 'off1',
-    title: 'Veggie Fiesta',
-    description: 'Flat 10% OFF on all Pizzas!',
-    discountPercentage: 10,
-    category: Category.PIZZA
-  }
+ // { 
+ // id: 'off1',
+//   title: 'Veggie Fiesta',
+//    description: 'Flat 10% OFF on all Pizzas!',
+  //  discountPercentage: 10,
+//    category: Category.PIZZA
+//  }
 ];
 
 export const MENU_ITEMS: MenuItem[] = [
