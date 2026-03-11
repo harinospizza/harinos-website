@@ -13,9 +13,13 @@ const AdminPanel: React.FC = () => {
   const [orders, setOrders] = useState<Order[]>([]);
 
   useEffect(() => {
-    const unsub = subscribeToOrders((data: any[]) => {
-      setOrders(data);
-    });
+    const unsub = subscribeToOrders((data: any) => {
+  if (Array.isArray(data)) {
+    setOrders(data);
+  } else {
+    setOrders([]);
+  }
+});
     return () => unsub && unsub();
   }, []);
 
@@ -28,7 +32,8 @@ const AdminPanel: React.FC = () => {
       )}
 
       <div className="space-y-4">
-        {orders.map((o) => (
+        {Array.isArray(orders) &&
+  orders.map((o) => (
           <div
             key={o.orderId}
             className="bg-white/10 p-4 rounded-xl border border-white/10"
