@@ -4,3 +4,9 @@
     { "src": "/.*", "dest": "/" }
   ]
 }
+{
+  "rewrites": [
+    { "source": "/sw.js", "destination": "/index.html" },
+    { "source": "/(.*)", "destination": "/index.html" }
+  ]
+}
