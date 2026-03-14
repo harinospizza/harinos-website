@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -7,25 +6,34 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>Harino's Pizza</title>
     
-    <!-- SEO & Domain Linking -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.getRegistrations().then(function(registrations) {
+          for(let registration of registrations) {
+            registration.unregister().then(function() {
+              console.log('Old SW Removed');
+              window.location.reload();
+            });
+          }
+        });
+      }
+    </script>
+    
     <link rel="canonical" href="https://harinos.store" />
     <meta name="description" content="Harino's Pizza - 100% Vegetarian handcrafted pizza, momos, and burgers. Order online at harinos.store." />
     
-    <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://harinos.store/" />
     <meta property="og:title" content="Harino's Pizza" />
     <meta property="og:description" content="Premium Pizza Outlet with AI assistant, Loyalty Program, and WhatsApp Ordering. Because Hari Knows." />
     <meta property="og:image" content="https://drive.google.com/thumbnail?id=1Gz7Qi82EYLJZxm1EfFxpXHHQ6mhKQIc4&sz=w1200" />
 
-    <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image" />
     <meta property="twitter:url" content="https://harinos.store/" />
     <meta property="twitter:title" content="Harino's Pizza" />
     <meta property="twitter:description" content="Premium Pizza Outlet with AI assistant. Order now at harinos.store." />
     <meta property="twitter:image" content="https://drive.google.com/thumbnail?id=1Gz7Qi82EYLJZxm1EfFxpXHHQ6mhKQIc4&sz=w1200" />
 
-    <!-- Web App Manifest / Icons -->
     <link rel="icon" type="image/png" href="https://drive.google.com/thumbnail?id=1Gz7Qi82EYLJZxm1EfFxpXHHQ6mhKQIc4&sz=w500">
     <link rel="apple-touch-icon" href="https://drive.google.com/thumbnail?id=1Gz7Qi82EYLJZxm1EfFxpXHHQ6mhKQIc4&sz=w500">
     
