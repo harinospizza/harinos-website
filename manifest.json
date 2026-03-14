@@ -7,14 +7,16 @@
   "theme_color": "#ff6b00",
   "icons": [
     {
-      "src": "/icon-192.png",
+      "src": "https://drive.google.com/thumbnail?id=1Gz7Qi82EYLJZxm1EfFxpXHHQ6mhKQIc4&sz=w192",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     },
     {
-      "src": "/icon-512.png",
+      "src": "https://drive.google.com/thumbnail?id=1Gz7Qi82EYLJZxm1EfFxpXHHQ6mhKQIc4&sz=w512",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     }
   ]
 }
