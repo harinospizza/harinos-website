@@ -19,6 +19,27 @@ const OUTLET_LAT = 28.011897;
 const OUTLET_LNG = 77.675534;
 
 const App: React.FC = () => {
+  // --- SERVICE WORKER & CACHE CLEANUP (For Customers) ---
+  useEffect(() => {
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.getRegistrations().then((registrations) => {
+        for (const registration of registrations) {
+          registration.unregister();
+          console.log('Old Service Worker Unregistered');
+        }
+      });
+    }
+
+    if ('caches' in window) {
+      caches.keys().then((names) => {
+        for (const name of names) {
+          caches.delete(name);
+        }
+      });
+    }
+  }, []);
+  // --- END CLEANUP ---
+
   const [showLogin, setShowLogin] = useState(false);
   const [adminMode, setAdminMode] = useState(false);
   const [staffMode, setStaffMode] = useState(false);
@@ -40,7 +61,6 @@ const App: React.FC = () => {
 
   const menuRef = useRef<HTMLDivElement>(null);
 
-  // Persist cart to local storage whenever it changes
   useEffect(() => {
     StorageService.saveCart(cart);
   }, [cart]);
@@ -77,7 +97,6 @@ const App: React.FC = () => {
     };
   }, []);
 
-  // Admin login URL detector
 useEffect(() => {
   if (window.location.pathname === "/admin-login") {
     setView("admin-login");
@@ -113,7 +132,6 @@ useEffect(() => {
   const handleOrderTypeChange = async (type: OrderType) => {
   setOrderType(type);
 
-  // If switching away from dine-in, remove beverages from cart
   if (type !== 'dinein') {
     setCart(prev => {
       const filtered = prev.filter(item => item.category !== Category.BEVERAGES);
@@ -192,31 +210,21 @@ const filteredItems = useMemo(() => {
   return items;
 }, [selectedCategory, orderType]);
 
-  console.log("Selected:", selectedCategory);
-console.log("Filtered:", filteredItems.map(i => i.name));
-
-
   const deliveryFee = useMemo(() => {
     if (orderType === 'takeaway' || distance === null) return 0;
     const currentSubtotal = cart.reduce((sum, item) => sum + item.totalPrice, 0);
     
-    // Unserviceable beyond 5km
     if (distance > 5) return -1; 
 
-    // Logic based on user request:
-    // If subtotal < 150, Rs 15 added starting from 1km
     if (currentSubtotal < 150) {
       return Math.max(15, Math.round(distance * 15)); 
     } else {
-      // If subtotal >= 150, free within 3km
       if (distance <= 3) return 0;
-      // Nominal fuel charge for long distance even if minimum is met
       return Math.round((distance - 3) * 15);
     }
   }, [orderType, distance, cart]);
 
   const addToCart = (item: MenuItem, selectedSize?: string) => {
-  // Hard business rule
   if (item.category === Category.BEVERAGES && orderType !== 'dinein') {
     showNotification("🥤 Beverages are available for Dine-in only");
     return;
@@ -273,7 +281,6 @@ console.log("Filtered:", filteredItems.map(i => i.name));
       alert("Items currently unavailable.");
       return;
     }
-    // We append or replace? Usually re-order implies replacing the cart or adding. Let's replace for a clean experience.
     setCart(reorderItems);
     setView('menu');
     setIsCartOpen(true);
@@ -387,7 +394,7 @@ ${locationString}
     [Category.BEVERAGES]: '🥤',
     'All': '✨'
   };
-// ===== ADMIN / STAFF VIEW ROUTING =====
+
 if (view === "admin-login") {
   return (
     <AdminLogin
@@ -405,7 +412,7 @@ if (view === "admin") {
 if (view === "staff") {
   return <StaffPanel />;
 }
-// ===== END ADMIN ROUTING =====
+
   return (
     <div className="min-h-screen bg-slate-50/30 text-slate-900 overflow-x-hidden">
       <Header 
@@ -456,7 +463,6 @@ if (view === "staff") {
         </div>
       </footer>
       
-      {/* Category Selection Modal */}
       {isCategoryModalOpen && (
         <div className="fixed inset-0 z-[120] flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-slate-900/90 backdrop-blur-xl animate-in fade-in duration-300" onClick={() => setIsCategoryModalOpen(false)} />
@@ -493,7 +499,6 @@ if (view === "staff") {
         </div>
       )}
 
-      {/* Mobile Floating Cart Bar */}
       {cart.length > 0 && !isCartOpen && (
         <div className="fixed bottom-6 left-4 right-20 z-50 md:hidden animate-in slide-in-from-bottom-20 duration-500">
           <button 
@@ -531,10 +536,10 @@ if (view === "staff") {
       <PaymentModal isOpen={isPaymentOpen} onClose={() => setIsPaymentOpen(false)} total={currentTotal} onPaymentComplete={handlePaymentComplete} />
       {notification && (
         <div className="fixed bottom-32 left-1/2 -translate-x-1/2 z-[100] animate-in slide-in-from-bottom-10 duration-500 w-full max-w-[90%] md:max-w-xs">
-           <div className="bg-slate-900 text-white px-6 md:px-8 py-4 rounded-2xl shadow-2xl border border-red-600/30 flex items-center space-x-3 mx-auto">
-              <span className="text-xl">🍕</span>
-              <span className="text-[9px] md:text-[10px] font-black uppercase tracking-widest">{notification}</span>
-           </div>
+            <div className="bg-slate-900 text-white px-6 md:px-8 py-4 rounded-2xl shadow-2xl border border-red-600/30 flex items-center space-x-3 mx-auto">
+               <span className="text-xl">🍕</span>
+               <span className="text-[9px] md:text-[10px] font-black uppercase tracking-widest">{notification}</span>
+            </div>
         </div>
       )}
       {showOrderSuccess && (
