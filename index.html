@@ -2,13 +2,21 @@
 <html lang="en">
   <head>
     <script>
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.getRegistrations().then(function(registrations) {
-    for (let registration of registrations) {
-      registration.unregister();
-    }
-  });
-}
+<script>
+(function() {
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.getRegistrations().then(function(registrations) {
+      if (registrations.length > 0) {
+        registrations.forEach(function(reg) {
+          reg.unregister();
+        });
+
+        // Force reload without cache
+        window.location.href = window.location.href + "?clear=" + Date.now();
+      }
+    });
+  }
+})();
 </script>
     <link rel="manifest" href="/manifest.json">
     <meta charset="UTF-8" />
