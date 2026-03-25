@@ -1,6 +1,3 @@
-import AdminLogin from "./components/AdminLogin";
-import AdminPanel from "./components/AdminPanel";
-import StaffPanel from "./components/StaffPanel";
 import React, { useState, useMemo, useEffect, useCallback, useRef } from 'react';
 import { Category, MenuItem, CartItem, OrderType, Order, Offer } from './types';
 import { MENU_ITEMS, OFFERS } from './constants';
