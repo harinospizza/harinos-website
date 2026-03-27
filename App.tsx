@@ -211,7 +211,7 @@ const filteredItems = useMemo(() => {
     if (orderType === 'takeaway' || distance === null) return 0;
     const currentSubtotal = cart.reduce((sum, item) => sum + item.totalPrice, 0);
     
-    if (distance > 5) return -1; 
+    if (distance > 7) return -1; 
 
     if (currentSubtotal < 150) {
       return Math.max(15, Math.round(distance * 15)); 
