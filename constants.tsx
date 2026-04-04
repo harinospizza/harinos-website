@@ -395,7 +395,7 @@ export const MENU_ITEMS: MenuItem[] = [
 
   // --- SIDE ORDERS & SNACKS ---
   { id: 's_cl', name: "Choco Lava Cake", description: "Molten chocolate center cake.", price: 60, category: Category.SIDES, image: "/images/chocolava.jpeg", vegetarian: true, available: true },
-  { id: 's_gb', name: "Garlic Bread", description: "Freshly baked garlic butter bread.", price: 80, category: Category.SIDES, image: "/images/garlicbread.jpeg", vegetarian: true, available: true },
+  //{ id: 's_gb', name: "Garlic Bread", description: "Freshly baked garlic butter bread.", price: 80, category: Category.SIDES, image: "/images/garlicbread.jpeg", vegetarian: true, available: true },
   { id: 's_sg', name: "Stuffed Garlic Bread", description: "Loaded with cheese, corn, and onion.", price: 120, category: Category.SIDES, image: "/images/stuffed.jpeg", vegetarian: true, available: true },
   {
     id: 's_zp',
