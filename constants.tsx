@@ -142,18 +142,6 @@ export const MENU_ITEMS: MenuItem[] = [
     popular: true,
     sizes: [{ label: 'Regular', price: 169 }, { label: 'Medium', price: 299 }, { label: 'Large', price: 429 }]
   },
-  {
-    id: 'p3_bp',
-    name: "Bomb Pizza",
-    description: "Explosive flavors with a special house-spice blend and veggies.",
-    price: 169,
-    category: Category.PIZZA,
-    image: "/images/bomb.jpeg",
-    vegetarian: true,
-    available: true,
-    sizes: [{ label: 'Regular', price: 169 }, { label: 'Medium', price: 289 }, { label: 'Large', price: 409 }]
-  },
-
   // --- PIZZAS: 4. Crunch & Fusion ---
   {
     id: 'p4_mc',
@@ -293,28 +281,28 @@ export const MENU_ITEMS: MenuItem[] = [
     available: true,
     sizes: [{ label: 'Half', price: 60 }, { label: 'Full', price: 90 }]
   },
-  {
-    id: 'm5_v',
-    name: "Veg Crunchy Momos",
-    description: "Extra crispy breaded veg momos.",
-    price: 70,
-    category: Category.MOMOS_FRIES,
-    image: "/images/crunchymomos.jpeg",
-    vegetarian: true,
-    available: true,
-    sizes: [{ label: 'Half', price: 70 }, { label: 'Full', price: 100 }]
-  },
-  {
-    id: 'm5_s',
-    name: "Soya Crunchy Momos",
-    description: "Breaded crunchy soya dumplings.",
-    price: 60,
-    category: Category.MOMOS_FRIES,
-    image: "/images/crunchymomos.jpeg",
-    vegetarian: true,
-    available: true,
-    sizes: [{ label: 'Half', price: 60 }, { label: 'Full', price: 90 }]
-  },
+  //{
+   // id: 'm5_v',
+    //name: "Veg Crunchy Momos",
+   // description: "Extra crispy breaded veg momos.",
+  //  price: 70,
+  //  category: Category.MOMOS_FRIES,
+  //  image: "/images/crunchymomos.jpeg",
+  //  vegetarian: true,
+  //  available: true,
+  //  sizes: [{ label: 'Half', price: 70 }, { label: 'Full', price: 100 }]
+ // },
+  //{
+   // id: 'm5_s',
+   // name: "Soya Crunchy Momos",
+   // description: "Breaded crunchy soya dumplings.",
+   // price: 60,
+   // category: Category.MOMOS_FRIES,
+   // image: "/images/crunchymomos.jpeg",
+   // vegetarian: true,
+   // available: true,
+   // sizes: [{ label: 'Half', price: 60 }, { label: 'Full', price: 90 }]
+  //},
   {
     id: 'm6_v',
     name: "Veg Gravy Momos",
