@@ -1,372 +1,577 @@
-import React, { useState, useMemo, useEffect, useCallback, useRef } from 'react';
-import { Category, MenuItem, CartItem, OrderType, Order, Offer } from './types';
-import { MENU_ITEMS, OFFERS } from './constants';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import {
+  CartItem,
+  Category,
+  CategoryFilter,
+  CustomerLocation,
+  MenuItem,
+  OfferCard,
+  Order,
+  OrderItem,
+  OrderType,
+} from './types';
+import { MENU_ITEMS, OFFER_CARDS, OUTLET_LOCATIONS } from './constants';
 import { StorageService } from './services/storage';
 import { NotificationService } from './services/notification';
+import { saveOrderToServer } from './services/orderApi';
+import {
+  buildPricedCart,
+  getAutomaticOfferBonusItems,
+  getCartItemId,
+  getOfferActionTarget,
+  getItemBasePrice,
+  normalizeStoredCartItem,
+} from './offerUtils';
+import {
+  OutletMatch,
+  buildCustomerMapUrl,
+  findNearestOutletByRoadDistance,
+  sanitizePhoneNumber,
+} from './outletUtils';
 import Header from './components/Header';
 import Hero from './components/Hero';
+import OfferCarousel from './components/OfferCarousel';
 import MenuSection from './components/MenuSection';
 import CartSidebar from './components/CartSidebar';
-import { saveOrderToFirebase } from "./services/firebase";
-
 import PastOrders from './components/PastOrders';
 import PaymentModal from './components/PaymentModal';
+import { useSwipeDismiss } from './hooks/useSwipeDismiss';
 
-const OUTLET_LAT = 28.011897;
-const OUTLET_LNG = 77.675534;
+const DISPLAY_OFFERS = OFFER_CARDS.slice(0, 3);
 
 const App: React.FC = () => {
-  // --- SERVICE WORKER & CACHE CLEANUP (For Customers) ---
-  useEffect(() => {
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.getRegistrations().then((registrations) => {
-        for (const registration of registrations) {
-          registration.unregister();
-          console.log('Old Service Worker Unregistered');
-        }
-      });
-    }
-
-    if ('caches' in window) {
-      caches.keys().then((names) => {
-        for (const name of names) {
-          caches.delete(name);
-        }
-      });
-    }
-  }, []);
-  // --- END CLEANUP ---
-
-  const [showLogin, setShowLogin] = useState(false);
-  const [adminMode, setAdminMode] = useState(false);
-  const [staffMode, setStaffMode] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState<Category | 'All'>('All');
-  const [cart, setCart] = useState<CartItem[]>(() => StorageService.getCart());
+  const [selectedCategory, setSelectedCategory] = useState<CategoryFilter>('All');
+  const [cart, setCart] = useState<CartItem[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isPaymentOpen, setIsPaymentOpen] = useState(false);
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
   const [showOrderSuccess, setShowOrderSuccess] = useState(false);
   const [notification, setNotification] = useState<string | null>(null);
-  const [loyaltyPoints, setLoyaltyPoints] = useState(StorageService.getLoyaltyPoints());
   const [orderType, setOrderType] = useState<OrderType>('takeaway');
-  const [distance, setDistance] = useState<number | null>(null);
-  const [view, setView] = useState<'menu' | 'orders' | 'admin-login' | 'admin' | 'staff'>('menu');
+  const [customerLocation, setCustomerLocation] = useState<CustomerLocation | null>(null);
+  const [view, setView] = useState<'menu' | 'orders'>('menu');
   const [pastOrders, setPastOrders] = useState<Order[]>(StorageService.getPastOrders());
-  
   const [isStoreOpen, setIsStoreOpen] = useState(true);
-  const [statusMessage, setStatusMessage] = useState("");
+  const [statusMessage, setStatusMessage] = useState('');
+  const [nearestOutletMatch, setNearestOutletMatch] = useState<OutletMatch | null>(null);
+  const [isResolvingOutletMatch, setIsResolvingOutletMatch] = useState(false);
 
   const menuRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    StorageService.saveCart(cart);
-  }, [cart]);
+  const categorySwipeDismiss = useSwipeDismiss({
+    direction: 'down',
+    onDismiss: () => setIsCategoryModalOpen(false),
+  });
+  const successSwipeDismiss = useSwipeDismiss({
+    direction: 'down',
+    onDismiss: () => setShowOrderSuccess(false),
+  });
+  const ordersSwipeDismiss = useSwipeDismiss({
+    direction: 'right',
+    onDismiss: () => setView('menu'),
+  });
+  const activeOfferCards = useMemo(
+    () => DISPLAY_OFFERS.filter((offer) => offer.enabled),
+    [],
+  );
+  const activeOutlets = useMemo(
+    () => OUTLET_LOCATIONS.filter((outlet) => outlet.enabled),
+    [],
+  );
+  const nearestOutlet = nearestOutletMatch?.outlet ?? null;
+  const outletDistanceKm = nearestOutletMatch?.distanceKm ?? null;
 
   useEffect(() => {
     const checkStoreStatus = () => {
       const now = new Date();
-      const hour = now.getHours();
-      const mins = now.getMinutes();
-      const currentTimeInMins = hour * 60 + mins;
-
+      const currentTimeInMins = now.getHours() * 60 + now.getMinutes();
       const openingTime = 11 * 60;
       const closingTime = 20 * 60;
 
       if (currentTimeInMins < openingTime || currentTimeInMins >= closingTime) {
         setIsStoreOpen(false);
-        setStatusMessage("Store is currently closed. Open: 11:00 AM - 08:00 PM.");
-      } else {
-        setIsStoreOpen(true);
-        setStatusMessage("Closed for the maintenance, It will open shortly");
+        setStatusMessage('Store is currently closed. Open: 11:00 AM - 08:00 PM.');
+        return;
       }
+
+      setIsStoreOpen(true);
+      setStatusMessage('Orders are being prepared fresh.');
     };
 
     checkStoreStatus();
-    const interval = setInterval(checkStoreStatus, 60000);
-
-    const offerTimer = setTimeout(() => {
-      NotificationService.sendSpecialOffer();
-    }, 10000);
+    const interval = window.setInterval(checkStoreStatus, 60000);
 
     return () => {
-      clearInterval(interval);
-      clearTimeout(offerTimer);
+      window.clearInterval(interval);
     };
   }, []);
 
-useEffect(() => {
-  if (window.location.pathname === "/admin-login") {
-    setView("admin-login");
-  }
-}, []);
+  useEffect(() => {
+    NotificationService.notifyOfferReleases(activeOfferCards);
+  }, [activeOfferCards]);
 
-  const calculateDistance = (lat: number, lng: number) => {
-    const R = 6371; 
-    const dLat = (lat - OUTLET_LAT) * Math.PI / 180;
-    const dLon = (lng - OUTLET_LNG) * Math.PI / 180;
-    const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-              Math.cos(OUTLET_LAT * Math.PI / 180) * Math.cos(lat * Math.PI / 180) *
-              Math.sin(dLon / 2) * Math.sin(dLon / 2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    return R * c;
-  };
+  const showNotification = useCallback((message: string) => {
+    setNotification(message);
+    window.setTimeout(() => setNotification(null), 3000);
+  }, []);
 
-  const detectLocation = useCallback(async () => {
+  const refreshNearestOutletMatch = useCallback(
+    async (location: CustomerLocation): Promise<OutletMatch | null> => {
+      if (!activeOutlets.length) {
+        setNearestOutletMatch(null);
+        return null;
+      }
+
+      setIsResolvingOutletMatch(true);
+
+      try {
+        const outletMatch = await findNearestOutletByRoadDistance(location, activeOutlets);
+        setNearestOutletMatch(outletMatch);
+        return outletMatch;
+      } catch (error) {
+        console.error('Road distance routing failed:', error);
+        setNearestOutletMatch(null);
+        throw error;
+      } finally {
+        setIsResolvingOutletMatch(false);
+      }
+    },
+    [activeOutlets],
+  );
+
+  useEffect(() => {
+    if (!customerLocation) {
+      setNearestOutletMatch(null);
+      setIsResolvingOutletMatch(false);
+      return;
+    }
+
+    let isCancelled = false;
+    setIsResolvingOutletMatch(true);
+
+    findNearestOutletByRoadDistance(customerLocation, activeOutlets)
+      .then((outletMatch) => {
+        if (isCancelled) {
+          return;
+        }
+
+        setNearestOutletMatch(outletMatch);
+      })
+      .catch((error) => {
+        if (isCancelled) {
+          return;
+        }
+
+        console.error('Road distance routing failed:', error);
+        setNearestOutletMatch(null);
+        showNotification('Unable to calculate road distance right now. Please try again.');
+      })
+      .finally(() => {
+        if (!isCancelled) {
+          setIsResolvingOutletMatch(false);
+        }
+      });
+
+    return () => {
+      isCancelled = true;
+    };
+  }, [activeOutlets, customerLocation, showNotification]);
+
+  const scrollMenuIntoView = useCallback(() => {
+    window.setTimeout(() => {
+      menuRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 80);
+  }, []);
+
+  const handleExploreCategory = useCallback(
+    (category: CategoryFilter) => {
+      setSelectedCategory(category);
+      setView('menu');
+      setIsCategoryModalOpen(false);
+      scrollMenuIntoView();
+    },
+    [scrollMenuIntoView],
+  );
+
+  const detectLocation = useCallback(async (): Promise<CustomerLocation | null> => {
+    if (!activeOutlets.length) {
+      alert('Please enable at least one outlet in constants.tsx before accepting orders.');
+      return null;
+    }
+
     try {
       const position = await new Promise<GeolocationPosition>((resolve, reject) => {
         navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 8000 });
       });
-      const currentDistance = calculateDistance(position.coords.latitude, position.coords.longitude);
-      setDistance(currentDistance);
-      return currentDistance;
-    } catch (e) {
-      alert("Location permission is needed for delivery calculations.");
-      setOrderType('takeaway');
+
+      const resolvedLocation = {
+        latitude: position.coords.latitude,
+        longitude: position.coords.longitude,
+        mapUrl: buildCustomerMapUrl(position.coords.latitude, position.coords.longitude),
+      };
+
+      setCustomerLocation(resolvedLocation);
+      return resolvedLocation;
+    } catch (error) {
+      alert('Location is mandatory so we can route your order to the nearest outlet.');
       return null;
     }
-  }, []);
+  }, [activeOutlets.length]);
 
   const handleOrderTypeChange = async (type: OrderType) => {
-  setOrderType(type);
+    setOrderType(type);
 
-  if (type !== 'dinein') {
-    setCart(prev => {
-      const filtered = prev.filter(item => item.category !== Category.BEVERAGES);
+    if (type !== 'dinein') {
+      setCart((currentCart) => {
+        const filteredCart = currentCart.filter((item) => item.category !== Category.BEVERAGES);
+        if (filteredCart.length !== currentCart.length) {
+          showNotification('Beverages are available for dine-in only.');
+        }
+        return filteredCart;
+      });
+    }
 
-      if (filtered.length !== prev.length) {
-        showNotification("Beverages removed – available for Dine-In only.");
+    if (type === 'delivery' && !customerLocation) {
+      const resolvedLocation = await detectLocation();
+      if (!resolvedLocation) {
+        setOrderType('takeaway');
       }
-
-      return filtered;
-    });
-  }
-
-  if (type === 'delivery' && distance === null) {
-    await detectLocation();
-  }
-};
-
-
-  const showNotification = (msg: string) => {
-    setNotification(msg);
-    setTimeout(() => setNotification(null), 3000);
+    }
   };
 
   const handleShare = async () => {
     const shareData = {
       title: "Harino's Pizza",
-      text: "अब पिज्जा ऑर्डर करना हुआ और भी आसान 😋 Check out Harino's - Handcrafted Pizza! Because Hari Knows.",
-      url: "https://harinos.store"
+      text: "Check out Harino's handcrafted pizzas, burgers, and snacks at harinos.store.",
+      url: 'https://harinos.store',
     };
 
     if (navigator.share) {
       try {
         await navigator.share(shareData);
-      } catch (err) {
-        console.log("Error sharing:", err);
+      } catch (error) {
+        console.log('Error sharing:', error);
       }
-    } else {
-      try {
-        await navigator.clipboard.writeText("Check out Harino's at https://harinos.store");
-        showNotification("Link copied to clipboard!");
-      } catch (err) {
-        alert("Visit us at harinos.store!");
-      }
+      return;
+    }
+
+    try {
+      await navigator.clipboard.writeText('Check out Harino\'s at https://harinos.store');
+      showNotification('Link copied to clipboard.');
+    } catch (error) {
+      alert('Visit us at harinos.store.');
     }
   };
 
-  const handleExploreCategory = (cat: Category | 'All') => {
-    setSelectedCategory(cat);
-    setIsCategoryModalOpen(false);
-    setView('menu');
-    setTimeout(() => {
-      if (menuRef.current) {
-        menuRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  const addToCart = useCallback(
+    (item: MenuItem, selectedSize?: string) => {
+      if (item.category === Category.BEVERAGES && orderType !== 'dinein') {
+        showNotification('Beverages are available for dine-in only.');
+        return;
       }
-    }, 100);
-  };
 
-  const getEffectivePrice = (item: MenuItem, size?: string) => {
-    let basePrice = item.price;
-    if (size && item.sizes) {
-      const opt = item.sizes.find(s => s.label === size);
-      if (opt) basePrice = opt.price;
-    }
-    const applicableOffer = OFFERS.find(o => !o.category || o.category === item.category);
-    if (applicableOffer) {
-      return Math.round(basePrice * (1 - applicableOffer.discountPercentage / 100));
-    }
-    return basePrice;
-  };
-
-const filteredItems = useMemo(() => {
-  let items = selectedCategory === 'All'
-    ? MENU_ITEMS
-    : MENU_ITEMS.filter(item => item.category === selectedCategory);
-
-  return items;
-}, [selectedCategory, orderType]);
-
-  const deliveryFee = useMemo(() => {
-    if (orderType === 'takeaway' || distance === null) return 0;
-    const currentSubtotal = cart.reduce((sum, item) => sum + item.totalPrice, 0);
-    
-    if (distance > 7) return -1; 
-
-    if (currentSubtotal < 150) {
-      return Math.max(15, Math.round(distance * 15)); 
-    } else {
-      if (distance <= 3) return 0;
-      return Math.round((distance - 3) * 15);
-    }
-  }, [orderType, distance, cart]);
-
-  const addToCart = (item: MenuItem, selectedSize?: string) => {
-  if (item.category === Category.BEVERAGES && orderType !== 'dinein') {
-    showNotification("🥤 Beverages are available for Dine-in only");
-    return;
-  }
-
-  if (!item.available) return;
-
-    const discountedPrice = getEffectivePrice(item, selectedSize);
-    setCart(prev => {
-      const cartItemId = selectedSize ? `${item.id}-${selectedSize}` : item.id;
-      const existing = prev.find(i => (i.selectedSize ? `${i.id}-${i.selectedSize}` : i.id) === cartItemId);
-      if (existing) {
-        return prev.map(i => (i.selectedSize ? `${i.id}-${i.selectedSize}` : i.id) === cartItemId 
-          ? { ...i, quantity: i.quantity + 1, totalPrice: (i.quantity + 1) * discountedPrice } 
-          : i);
+      if (!item.available) {
+        return;
       }
-      return [...prev, { ...item, quantity: 1, discountedPrice, totalPrice: discountedPrice, selectedSize }];
-    });
-    showNotification(`Added ${item.name} to basket!`);
-  };
+
+      const normalizedSize = selectedSize ?? item.sizes?.[0]?.label;
+      const basePrice = getItemBasePrice(item, normalizedSize);
+
+      setCart((currentCart) => {
+        const cartItemId = getCartItemId({ id: item.id, selectedSize: normalizedSize });
+        const existingItem = currentCart.find((cartItem) => getCartItemId(cartItem) === cartItemId);
+
+        if (existingItem) {
+          return currentCart.map((cartItem) => {
+            return getCartItemId(cartItem) === cartItemId
+              ? { ...cartItem, quantity: cartItem.quantity + 1 }
+              : cartItem;
+          });
+        }
+
+        return [
+          ...currentCart,
+          {
+            ...item,
+            quantity: 1,
+            selectedSize: normalizedSize,
+            basePrice,
+          },
+        ];
+      });
+
+      showNotification(`${item.name} added to basket.`);
+    },
+    [orderType, showNotification],
+  );
+
+  const handleOfferAction = useCallback(
+    (offer: OfferCard) => {
+      const target = getOfferActionTarget(offer);
+      setSelectedCategory(target.category);
+      setView('menu');
+      if (target.item) {
+        showNotification(`${target.item.name} is featured in this offer.`);
+      }
+      scrollMenuIntoView();
+    },
+    [scrollMenuIntoView, showNotification],
+  );
+
+  const handleNotificationsEnabled = useCallback(() => {
+    NotificationService.notifyOfferReleases(activeOfferCards, { force: true });
+  }, [activeOfferCards]);
+
+  const resolveNearestOutletForOrder = useCallback(async () => {
+    if (!activeOutlets.length) {
+      alert('Please enable at least one outlet in constants.tsx before accepting orders.');
+      return null;
+    }
+
+    const resolvedLocation = customerLocation ?? (await detectLocation());
+    if (!resolvedLocation) {
+      return null;
+    }
+
+    let outletMatch: OutletMatch | null = null;
+
+    try {
+      outletMatch = await refreshNearestOutletMatch(resolvedLocation);
+    } catch (error) {
+      alert('We could not calculate the road distance to your nearest outlet. Please try again.');
+      return null;
+    }
+
+    if (!outletMatch) {
+      alert('We could not match your location to an active outlet.');
+      return null;
+    }
+
+    return {
+      customerLocation: resolvedLocation,
+      outletMatch,
+    };
+  }, [activeOutlets, customerLocation, detectLocation, refreshNearestOutletMatch]);
 
   const updateQuantity = (cartItemId: string, delta: number) => {
-    setCart(prev => prev.map(item => {
-      const currentId = item.selectedSize ? `${item.id}-${item.selectedSize}` : item.id;
-      if (currentId === cartItemId) {
-        const newQty = Math.max(1, item.quantity + delta);
-        return { ...item, quantity: newQty, totalPrice: newQty * item.discountedPrice };
-      }
-      return item;
-    }));
+    setCart((currentCart) =>
+      currentCart.map((item) => {
+        if (getCartItemId(item) !== cartItemId) {
+          return item;
+        }
+
+        return { ...item, quantity: Math.max(1, item.quantity + delta) };
+      }),
+    );
   };
 
   const removeFromCart = (cartItemId: string) => {
-    setCart(prev => prev.filter(item => {
-      const currentId = item.selectedSize ? `${item.id}-${item.selectedSize}` : item.id;
-      return currentId !== cartItemId;
-    }));
+    setCart((currentCart) =>
+      currentCart.filter((item) => getCartItemId(item) !== cartItemId),
+    );
   };
 
   const handleReorder = (order: Order) => {
-    const reorderItems = order.items.map(item => {
-      const freshItem = MENU_ITEMS.find(mi => mi.id === item.id);
-      const discountedPrice = freshItem ? getEffectivePrice(freshItem, item.selectedSize) : item.discountedPrice;
-      return { 
-        ...(freshItem || item), 
-        quantity: item.quantity, 
-        discountedPrice,
-        totalPrice: item.quantity * discountedPrice,
-        selectedSize: item.selectedSize
-      };
-    }).filter(item => item.available);
-    
-    if (reorderItems.length === 0) {
-      alert("Items currently unavailable.");
+    const manualOrderItems = order.items.filter((item) => !item.isOfferBonus);
+
+    if (!manualOrderItems.length) {
+      alert('This saved order only contains promotional bonus items.');
       return;
     }
+
+    const reorderItems = manualOrderItems
+      .map((item) => {
+        const freshItem = MENU_ITEMS.find((menuItem) => menuItem.id === item.id);
+        const nextItem = freshItem ?? item;
+        return normalizeStoredCartItem({
+          ...nextItem,
+          quantity: item.quantity,
+          selectedSize: item.selectedSize,
+          basePrice: freshItem ? getItemBasePrice(freshItem, item.selectedSize) : item.basePrice,
+        });
+      })
+      .filter((item) => item.available);
+
+    if (!reorderItems.length) {
+      alert('Items from the previous order are currently unavailable.');
+      return;
+    }
+
     setCart(reorderItems);
     setView('menu');
     setIsCartOpen(true);
-    showNotification("Last order items restored!");
+    showNotification('Last order restored to basket.');
   };
 
-  const subtotal = cart.reduce((sum, item) => sum + item.totalPrice, 0);
-  const finalDelFee = orderType === 'delivery' && deliveryFee > 0 ? deliveryFee : 0;
-  const currentTotal = subtotal + finalDelFee;
-  const includedGst = subtotal - (subtotal / 1.05);
+  const filteredItems = useMemo(
+    () =>
+      selectedCategory === 'All'
+        ? MENU_ITEMS
+        : MENU_ITEMS.filter((item) => item.category === selectedCategory),
+    [selectedCategory],
+  );
+
+  const baseSubtotal = useMemo(
+    () => cart.reduce((sum, item) => sum + item.basePrice * item.quantity, 0),
+    [cart],
+  );
+
+  const bonusCart = useMemo(
+    () =>
+      getAutomaticOfferBonusItems(cart, activeOfferCards).filter(
+        (item) => orderType === 'dinein' || item.category !== Category.BEVERAGES,
+      ),
+    [activeOfferCards, cart, orderType],
+  );
+
+  const cartWithBonuses = useMemo(() => [...cart, ...bonusCart], [bonusCart, cart]);
+
+  const pricedCart = useMemo(
+    () => buildPricedCart(cartWithBonuses, activeOfferCards),
+    [activeOfferCards, cartWithBonuses],
+  );
+
+  const subtotal = useMemo(
+    () => pricedCart.reduce((sum, item) => sum + item.totalPrice, 0),
+    [pricedCart],
+  );
+
+  const deliveryFee = useMemo(() => {
+    if (orderType !== 'delivery' || !nearestOutlet || outletDistanceKm === null) {
+      return 0;
+    }
+
+    if (outletDistanceKm > nearestOutlet.deliveryRadiusKm) {
+      return -1;
+    }
+
+    if (subtotal < nearestOutlet.freeDeliveryMinimumOrder) {
+      return Math.max(
+        nearestOutlet.minimumDeliveryFee,
+        Math.round(outletDistanceKm * nearestOutlet.deliveryChargePerKm),
+      );
+    }
+
+    if (outletDistanceKm <= nearestOutlet.freeDeliveryRadiusKm) {
+      return 0;
+    }
+
+    return Math.round(
+      (outletDistanceKm - nearestOutlet.freeDeliveryRadiusKm) * nearestOutlet.deliveryChargePerKm,
+    );
+  }, [nearestOutlet, orderType, outletDistanceKm, subtotal]);
+
+  const finalDeliveryFee = orderType === 'delivery' && deliveryFee > 0 ? deliveryFee : 0;
+  const currentTotal = subtotal + finalDeliveryFee;
+  const includedGst = subtotal - subtotal / 1.05;
+  const totalCartItems = pricedCart.reduce((sum, item) => sum + item.quantity, 0);
 
   const handleCheckoutInitiate = async () => {
     if (!isStoreOpen) {
-      alert(statusMessage || "Closed for the day.");
+      alert(statusMessage || 'Store is closed right now.');
       return;
     }
-    
+
+    const checkoutContext = await resolveNearestOutletForOrder();
+    if (!checkoutContext) {
+      return;
+    }
+
     if ('Notification' in window && Notification.permission === 'default') {
       await NotificationService.requestPermission();
     }
 
     if (orderType === 'delivery') {
-      if (distance === null) {
-        const d = await detectLocation();
-        if (d === null) return;
-      }
-      if (deliveryFee === -1) {
-        alert("Sorry, you are beyond our 7km service area.");
+      if (checkoutContext.outletMatch.distanceKm > checkoutContext.outletMatch.outlet.deliveryRadiusKm) {
+        alert(
+          `Sorry, ${checkoutContext.outletMatch.outlet.name} currently serves only up to ${checkoutContext.outletMatch.outlet.deliveryRadiusKm} km by road.`,
+        );
         return;
       }
     }
+
     setIsCartOpen(false);
     setIsPaymentOpen(true);
   };
 
   const handlePaymentComplete = async () => {
-    setIsPaymentOpen(false);
-    let locationString = "Takeaway Order";
-    if (orderType === 'delivery') {
-       try {
-        const position = await new Promise<GeolocationPosition>((resolve, reject) => {
-          navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 8000 });
-        });
-        locationString = `https://maps.google.com/?q=${position.coords.latitude},${position.coords.longitude}`;
-      } catch (e) {
-        locationString = "Location Verification (Confirmed)";
-      }
+    const checkoutContext = await resolveNearestOutletForOrder();
+    if (!checkoutContext) {
+      showNotification('Location is still required to place this order.');
+      return;
     }
 
+    setIsPaymentOpen(false);
+
+    const { customerLocation: resolvedLocation, outletMatch } = checkoutContext;
+    const { outlet } = outletMatch;
+    const locationString = resolvedLocation.mapUrl;
     const orderId = `HRN-${Date.now().toString().slice(-4)}`;
+    const orderItems: OrderItem[] = pricedCart.map((item) => ({ ...item }));
     const newOrder: Order = {
       id: orderId,
-      items: [...cart],
+      items: orderItems,
       total: currentTotal,
       date: new Date().toLocaleString(),
       orderType,
-      deliveryFee: finalDelFee
+      deliveryFee: finalDeliveryFee,
+      outletId: outlet.id,
+      outletName: outlet.name,
+      outletPhone: outlet.phone,
+      outletAddress: outlet.address,
+      customerLocationUrl: locationString,
+      distanceKm: outletMatch.distanceKm,
     };
-    await saveOrderToFirebase({
-  orderId,
-  items: cart,
-  total: currentTotal,
-  orderType,
-  deliveryFee: finalDelFee,
-  location: locationString,
-  createdAt: new Date().toISOString()
-});
-    StorageService.saveOrder(newOrder);
-    setPastOrders(prev => [newOrder, ...prev]);
-    NotificationService.simulateOrderStatus(orderId, orderType);
 
-    const itemsText = cart.map(i => {
-      const sizeTag = i.selectedSize ? ` [${i.selectedSize}]` : '';
-      return `${i.quantity}x ${i.name}${sizeTag.padEnd(25 - sizeTag.length)} ₹${i.totalPrice}`;
-    }).join('\n');
+    try {
+      await saveOrderToServer({
+        orderId,
+        items: orderItems,
+        total: currentTotal,
+        orderType,
+        deliveryFee: finalDeliveryFee,
+        location: locationString,
+        createdAt: new Date().toISOString(),
+        distanceKm: outletMatch.distanceKm,
+        outlet: {
+          id: outlet.id,
+          name: outlet.name,
+          address: outlet.address,
+          phone: outlet.phone,
+        },
+      });
+    } catch (error) {
+      console.error('Remote order sync failed:', error);
+    }
+
+    StorageService.saveOrder(newOrder);
+    setPastOrders((currentOrders) => [newOrder, ...currentOrders]);
+    NotificationService.simulateOrderStatus(orderId, orderType === 'delivery' ? 'delivery' : 'takeaway');
+
+    const itemsText = orderItems
+      .map((item) => {
+        const sizeText = item.selectedSize ? ` [${item.selectedSize}]` : '';
+        return `${item.quantity}x ${item.name}${sizeText} - Rs ${item.totalPrice}`;
+      })
+      .join('\n');
 
     const whatsappMessage = `
 *HARINO'S ORDER - ${orderId}*
 --------------------------
 TYPE: ${orderType.toUpperCase()}
-PAYMENT: COMPLETED ✅
+PAYMENT: COMPLETED
+--------------------------
+OUTLET: ${outlet.name}
+OUTLET PHONE: ${outlet.phone}
+OUTLET ADDRESS: ${outlet.address}
+ROAD DISTANCE: ${outletMatch.distanceKm.toFixed(1)} km
 --------------------------
 *ITEMS:*
 ${itemsText}
 --------------------------
-SUBTOTAL: ₹${subtotal.toFixed(2)}
-DELIVERY: ₹${finalDelFee.toFixed(2)}
-GST (5% INCL): ₹${includedGst.toFixed(2)}
-*TOTAL: ₹${currentTotal.toFixed(2)}*
+SUBTOTAL: Rs ${subtotal.toFixed(2)}
+DELIVERY: Rs ${finalDeliveryFee.toFixed(2)}
+GST (5% INCL): Rs ${includedGst.toFixed(2)}
+*TOTAL: Rs ${currentTotal.toFixed(2)}*
 --------------------------
 *LOCATION:*
 ${locationString}
@@ -374,66 +579,45 @@ ${locationString}
 *BECAUSE HARI KNOWS*
     `.trim();
 
-    StorageService.addLoyaltyPoints(Math.floor(subtotal / 10));
-    setLoyaltyPoints(StorageService.getLoyaltyPoints());
-    window.open(`https://wa.me/7818958571?text=${encodeURIComponent(whatsappMessage)}`, '_blank');
+    window.open(`https://wa.me/${sanitizePhoneNumber(outlet.phone)}?text=${encodeURIComponent(whatsappMessage)}`, '_blank');
     setShowOrderSuccess(true);
     setCart([]);
   };
 
-  const totalCartItems = cart.reduce((s, i) => s + i.quantity, 0);
-
-  const categoryIcons: Record<string, string> = {
-    [Category.PIZZA]: '🍕',
-    [Category.MOMOS_FRIES]: '🥟',
-    [Category.BURGERS]: '🍔',
-    [Category.SIDES]: '🍟',
-    [Category.BEVERAGES]: '🥤',
-    'All': '✨'
-  };
-
-if (view === "admin-login") {
-  return (
-    <AdminLogin
-      onAdmin={() => setView("admin")}
-      onStaff={() => setView("staff")}
-      onClose={() => setView("menu")}
-    />
-  );
-}
-
-if (view === "admin") {
-  return <AdminPanel />;
-}
-
-if (view === "staff") {
-  return <StaffPanel />;
-}
+  const categoryButtons: CategoryFilter[] = ['All', ...Object.values(Category)];
 
   return (
     <div className="min-h-screen bg-slate-50/30 text-slate-900 overflow-x-hidden">
-      <Header 
-        cartCount={totalCartItems} 
-        onCartClick={() => setIsCartOpen(true)} 
+      <Header
+        cartCount={totalCartItems}
+        onCartClick={() => setIsCartOpen(true)}
         onViewOrders={() => setView('orders')}
         onViewMenu={() => setView('menu')}
         activeView={view}
         onShare={handleShare}
+        onNotificationsEnabled={handleNotificationsEnabled}
       />
+
       <main className="pt-20">
         {view === 'menu' ? (
           <>
             <Hero onShare={handleShare} onExploreMenu={() => setIsCategoryModalOpen(true)} />
-            <div ref={menuRef} className="max-w-7xl mx-auto px-4 mt-6 md:mt-12 pb-24 scroll-mt-24">
-              <div className="relative mb-8 md:mb-16">
-                <div className="flex space-x-2 overflow-x-auto pb-6 pt-2 px-2 hide-scrollbar snap-x snap-mandatory scroll-smooth">
-                  {['All', ...Object.values(Category)].map((cat) => (
-                    <button 
-                      key={cat} 
-                      onClick={() => setSelectedCategory(cat as any)}
-                      className={`snap-start whitespace-nowrap px-6 py-4 rounded-2xl text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] transition-all border shadow-sm flex-shrink-0 ${selectedCategory === cat ? 'bg-red-600 border-red-600 text-white scale-105 shadow-red-200' : 'bg-white border-slate-100 text-slate-400 hover:text-red-600'}`}
+            <OfferCarousel offers={activeOfferCards} onAction={handleOfferAction} />
+
+            <div ref={menuRef} className="max-w-7xl mx-auto px-4 mt-8 md:mt-12 pb-24 scroll-mt-24">
+              <div className="relative mb-8 md:mb-12">
+                <div className="flex space-x-2 overflow-x-auto pb-4 pt-2 px-1 hide-scrollbar snap-x snap-mandatory scroll-smooth">
+                  {categoryButtons.map((category) => (
+                    <button
+                      key={category}
+                      onClick={() => handleExploreCategory(category)}
+                      className={`snap-start whitespace-nowrap px-6 py-4 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] transition-all border shadow-sm flex-shrink-0 ${
+                        selectedCategory === category
+                          ? 'bg-red-600 border-red-600 text-white scale-105 shadow-red-200'
+                          : 'bg-white border-slate-100 text-slate-500 hover:text-red-600'
+                      }`}
                     >
-                      {cat}
+                      {category}
                     </button>
                   ))}
                 </div>
@@ -441,64 +625,90 @@ if (view === "staff") {
               </div>
 
               {!isStoreOpen && (
-                <div className="bg-amber-50 border border-amber-200 p-6 rounded-[2rem] text-center mb-16 animate-in slide-in-from-top duration-700">
-                  <span className="text-amber-600 font-bold text-sm">Outlet Closed • {statusMessage}</span>
+                <div className="bg-amber-50 border border-amber-200 p-6 rounded-[2rem] text-center mb-10">
+                  <span className="text-amber-700 font-bold text-sm">Outlet Closed - {statusMessage}</span>
                 </div>
               )}
-              <MenuSection items={filteredItems} onAddToCart={addToCart} activeOffers={OFFERS} orderType={orderType}/>
+
+              <MenuSection
+                items={filteredItems}
+                onAddToCart={addToCart}
+                offers={activeOfferCards}
+                cartSubtotal={baseSubtotal}
+              />
             </div>
           </>
         ) : (
-          <PastOrders orders={pastOrders} onReorder={handleReorder} />
+          <div style={ordersSwipeDismiss.style} {...ordersSwipeDismiss.bind}>
+            <PastOrders orders={pastOrders} onReorder={handleReorder} />
+          </div>
         )}
       </main>
-      <footer className="bg-slate-900 text-white py-24 border-t border-white/5 pb-32 md:pb-24">
+
+      <footer className="bg-slate-900 text-white py-20 border-t border-white/5 pb-32 md:pb-24">
         <div className="max-w-7xl mx-auto px-4 text-center">
-          <h2 className="font-display text-5xl md:text-6xl mb-4 text-red-500">Harino's</h2>
-          <div className="text-white font-bold tracking-[0.6em] uppercase text-[9px] md:text-[11px] mb-10 opacity-40">BECAUSE HARI KNOWS</div>
+          <h2 className="font-display text-5xl md:text-6xl mb-4 text-red-500">Harino&apos;s</h2>
+          <div className="text-white font-bold tracking-[0.6em] uppercase text-[9px] md:text-[11px] mb-10 opacity-40">
+            Because Hari Knows
+          </div>
           <div className="text-white/20 text-[8px] uppercase tracking-widest mt-8">harinos.store</div>
         </div>
       </footer>
-      
+
       {isCategoryModalOpen && (
-        <div className="fixed inset-0 z-[120] flex items-center justify-center p-4">
-          <div className="absolute inset-0 bg-slate-900/90 backdrop-blur-xl animate-in fade-in duration-300" onClick={() => setIsCategoryModalOpen(false)} />
-          <div className="relative w-full max-w-2xl bg-white rounded-[3rem] shadow-2xl overflow-hidden animate-in zoom-in-95 duration-500">
-            <div className="bg-slate-900 p-8 text-center">
-               <h3 className="font-display text-3xl text-white mb-2">Explore Our Kitchen</h3>
-               <p className="text-white/40 text-[9px] uppercase tracking-[0.3em] font-black">Because Hari Knows What You Crave</p>
-               <button onClick={() => setIsCategoryModalOpen(false)} className="absolute top-6 right-6 text-white/40 hover:text-white transition-colors">
-                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12" /></svg>
-               </button>
+        <div className="fixed inset-0 z-[120] flex items-end justify-center p-0 sm:items-center sm:p-4">
+          <div
+            className="absolute inset-0 bg-slate-900/90 backdrop-blur-xl"
+            onClick={() => setIsCategoryModalOpen(false)}
+          />
+          <div
+            className="relative w-full max-w-2xl overflow-hidden rounded-t-[2rem] bg-white shadow-2xl sm:rounded-[3rem]"
+            style={categorySwipeDismiss.style}
+            {...categorySwipeDismiss.bind}
+          >
+            <div className="bg-slate-900 p-5 text-center sm:p-8">
+              <div className="mx-auto mb-3 h-1.5 w-12 rounded-full bg-white/25 sm:hidden" />
+              <h3 className="mb-2 text-2xl font-display text-white sm:text-3xl">Explore Our Kitchen</h3>
+              <p className="text-white/50 text-[10px] uppercase tracking-[0.24em] font-black">
+                Choose a category and jump to the menu
+              </p>
+              <div className="mt-3 text-[9px] font-black uppercase tracking-[0.22em] text-white/35">
+                Swipe down to close
+              </div>
             </div>
-            <div className="p-8 md:p-12">
+            <div className="p-5 sm:p-8 md:p-12">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {['All', ...Object.values(Category)].map((cat, idx) => (
+                {categoryButtons.map((category) => (
                   <button
-                    key={cat}
-                    onClick={() => handleExploreCategory(cat as any)}
-                    className="flex items-center space-x-4 p-5 rounded-2xl bg-slate-50 border border-slate-100 hover:border-red-200 hover:bg-red-50 transition-all group animate-in slide-in-from-bottom-10"
-                    style={{ animationDelay: `${idx * 50}ms` }}
+                    key={category}
+                    onClick={() => handleExploreCategory(category)}
+                    className="flex items-center justify-between p-5 rounded-2xl bg-slate-50 border border-slate-100 hover:border-red-200 hover:bg-red-50 transition-all group"
                   >
-                    <div className="w-14 h-14 bg-white rounded-xl shadow-sm flex items-center justify-center text-3xl group-hover:scale-110 transition-transform">
-                      {categoryIcons[cat]}
-                    </div>
                     <div className="text-left">
-                      <div className="text-[10px] font-black uppercase tracking-widest text-slate-400 group-hover:text-red-500 transition-colors">Category</div>
-                      <div className="text-lg font-display font-bold text-slate-900">{cat}</div>
+                      <div className="text-[10px] font-black uppercase tracking-widest text-slate-400 group-hover:text-red-500 transition-colors">
+                        Category
+                      </div>
+                      <div className="text-xl font-display font-bold text-slate-900">{category}</div>
                     </div>
+                    <svg
+                      className="w-5 h-5 text-slate-300 group-hover:text-red-500 transition-colors"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 5l7 7-7 7" />
+                    </svg>
                   </button>
                 ))}
               </div>
-              <p className="mt-8 text-center text-[9px] text-slate-400 font-black uppercase tracking-[0.2em]">100% Pure Vegetarian Kitchen</p>
             </div>
           </div>
         </div>
       )}
 
-      {cart.length > 0 && !isCartOpen && (
-        <div className="fixed bottom-6 left-4 right-20 z-50 md:hidden animate-in slide-in-from-bottom-20 duration-500">
-          <button 
+      {pricedCart.length > 0 && !isCartOpen && (
+        <div className="fixed bottom-6 left-4 right-20 z-50 md:hidden">
+          <button
             onClick={() => setIsCartOpen(true)}
             className="w-full bg-slate-900 text-white px-5 py-4 rounded-2xl shadow-2xl flex items-center justify-between border border-white/10"
           >
@@ -507,17 +717,19 @@ if (view === "staff") {
               <span className="text-[10px] font-black uppercase tracking-widest">View Basket</span>
             </div>
             <div className="flex items-center space-x-2">
-               <span className="text-xs font-display font-bold text-red-500">₹{subtotal.toFixed(0)}</span>
-               <svg className="w-4 h-4 text-white/40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 5l7 7-7 7" /></svg>
+              <span className="text-xs font-display font-bold text-red-500">Rs {subtotal.toFixed(0)}</span>
+              <svg className="w-4 h-4 text-white/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 5l7 7-7 7" />
+              </svg>
             </div>
           </button>
         </div>
       )}
 
-      <CartSidebar 
-        isOpen={isCartOpen} 
+      <CartSidebar
+        isOpen={isCartOpen}
         onClose={() => setIsCartOpen(false)}
-        items={cart}
+        items={pricedCart}
         onUpdateQuantity={updateQuantity}
         onRemove={removeFromCart}
         total={subtotal}
@@ -525,28 +737,60 @@ if (view === "staff") {
         orderType={orderType}
         setOrderType={handleOrderTypeChange}
         deliveryFee={deliveryFee}
-        distance={distance}
+        nearestOutlet={nearestOutlet}
+        outletDistanceKm={outletDistanceKm}
+        isResolvingOutletMatch={isResolvingOutletMatch}
+        customerLocation={customerLocation}
         onDetectLocation={detectLocation}
         pastOrders={pastOrders}
         onReorder={handleReorder}
       />
-      <PaymentModal isOpen={isPaymentOpen} onClose={() => setIsPaymentOpen(false)} total={currentTotal} onPaymentComplete={handlePaymentComplete} />
+
+      <PaymentModal
+        isOpen={isPaymentOpen}
+        onClose={() => setIsPaymentOpen(false)}
+        total={currentTotal}
+        onPaymentComplete={handlePaymentComplete}
+        outletName={nearestOutlet?.name}
+        outletPhone={nearestOutlet?.phone}
+      />
+
       {notification && (
-        <div className="fixed bottom-32 left-1/2 -translate-x-1/2 z-[100] animate-in slide-in-from-bottom-10 duration-500 w-full max-w-[90%] md:max-w-xs">
-            <div className="bg-slate-900 text-white px-6 md:px-8 py-4 rounded-2xl shadow-2xl border border-red-600/30 flex items-center space-x-3 mx-auto">
-               <span className="text-xl">🍕</span>
-               <span className="text-[9px] md:text-[10px] font-black uppercase tracking-widest">{notification}</span>
-            </div>
+        <div className="fixed bottom-32 left-1/2 -translate-x-1/2 z-[100] w-full max-w-[90%] md:max-w-xs">
+          <div className="bg-slate-900 text-white px-6 md:px-8 py-4 rounded-2xl shadow-2xl border border-red-600/30 mx-auto">
+            <span className="text-[10px] md:text-[11px] font-black uppercase tracking-widest">{notification}</span>
+          </div>
         </div>
       )}
+
       {showOrderSuccess && (
-        <div className="fixed inset-0 flex items-center justify-center z-[110] px-4">
-          <div className="bg-slate-900 text-white p-8 md:p-12 rounded-[2.5rem] md:rounded-[3.5rem] animate-in zoom-in-50 duration-500 shadow-2xl text-center border-2 border-red-600 w-full max-w-sm">
-            <div className="w-16 h-16 md:w-20 md:h-20 bg-green-500 rounded-full flex items-center justify-center text-white text-3xl md:text-4xl mb-6 mx-auto shadow-xl">✓</div>
-            <h4 className="font-display text-3xl md:text-4xl font-bold mb-3 leading-tight">Order Received!</h4>
-            <p className="text-white/60 text-[9px] md:text-[10px] uppercase tracking-widest mt-4">We'll notify you with status updates!</p>
-            <p className="text-[10px] md:text-[11px] text-red-500 font-black tracking-[0.5em] mt-8 uppercase animate-pulse">BECAUSE HARI KNOWS</p>
-            <button onClick={() => setShowOrderSuccess(false)} className="mt-10 px-10 py-4 bg-white/10 rounded-2xl text-[9px] md:text-[10px] font-bold uppercase tracking-widest hover:bg-white/20 transition-all w-full">Dismiss</button>
+        <div className="fixed inset-0 z-[110] flex items-end justify-center px-0 sm:items-center sm:px-4">
+          <div className="absolute inset-0 bg-slate-900/75 backdrop-blur-md" onClick={() => setShowOrderSuccess(false)} />
+          <div
+            className="relative w-full max-w-sm rounded-t-[2rem] border-2 border-red-600 bg-slate-900 p-6 text-center text-white shadow-2xl sm:rounded-[3rem] sm:p-10"
+            style={successSwipeDismiss.style}
+            {...successSwipeDismiss.bind}
+          >
+            <div className="mx-auto mb-4 h-1.5 w-12 rounded-full bg-white/20 sm:hidden" />
+            <div className="w-16 h-16 md:w-20 md:h-20 bg-green-500 rounded-full flex items-center justify-center text-white text-3xl md:text-4xl mb-6 mx-auto shadow-xl">
+              OK
+            </div>
+            <h4 className="font-display text-3xl md:text-4xl font-bold mb-3 leading-tight">Order Received</h4>
+            <p className="text-white/60 text-[10px] md:text-[11px] uppercase tracking-widest mt-4">
+              We will notify you with status updates.
+            </p>
+            <p className="mt-4 text-[9px] font-black uppercase tracking-[0.22em] text-white/35">
+              Swipe down to dismiss
+            </p>
+            <p className="text-[10px] md:text-[11px] text-red-500 font-black tracking-[0.5em] mt-8 uppercase">
+              Because Hari Knows
+            </p>
+            <button
+              onClick={() => setShowOrderSuccess(false)}
+              className="mt-10 px-10 py-4 bg-white/10 rounded-2xl text-[10px] font-bold uppercase tracking-widest hover:bg-white/20 transition-all w-full"
+            >
+              Dismiss
+            </button>
           </div>
         </div>
       )}
