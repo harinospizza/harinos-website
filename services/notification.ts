@@ -1,3 +1,8 @@
+import { getOfferNotificationMessage, getOfferReleaseSignature } from '../offerUtils';
+import { OfferCard } from '../types';
+
+const DEFAULT_ICON = 'https://drive.google.com/thumbnail?id=1Gz7Qi82EYLJZxm1EfFxpXHHQ6mhKQIc4&sz=w500';
+const OFFER_RELEASE_KEY = 'harinos_offer_release_signature';
 
 export const NotificationService = {
   requestPermission: async (): Promise<boolean> => {
@@ -20,46 +25,64 @@ export const NotificationService = {
     if (Notification.permission === 'granted') {
       new Notification(title, {
         body,
-        icon: icon || 'https://drive.google.com/thumbnail?id=1Gz7Qi82EYLJZxm1EfFxpXHHQ6mhKQIc4&sz=w500',
-        badge: 'https://drive.google.com/thumbnail?id=1Gz7Qi82EYLJZxm1EfFxpXHHQ6mhKQIc4&sz=w500'
+        icon: icon || DEFAULT_ICON,
+        badge: DEFAULT_ICON,
       });
     }
   },
 
+  notifyOfferReleases: (offers: OfferCard[], options?: { force?: boolean }) => {
+    if (Notification.permission !== 'granted') {
+      return;
+    }
+
+    const notifiableOffers = offers.filter((offer) => offer.enabled && offer.notifyCustomers);
+    if (!notifiableOffers.length) {
+      return;
+    }
+
+    const currentSignature = getOfferReleaseSignature(notifiableOffers);
+    const previousSignature = localStorage.getItem(OFFER_RELEASE_KEY);
+
+    if (!options?.force && previousSignature === currentSignature) {
+      return;
+    }
+
+    notifiableOffers.forEach((offer, index) => {
+      window.setTimeout(() => {
+        NotificationService.show(
+          `New Offer: ${offer.offerTitle}`,
+          getOfferNotificationMessage(offer),
+          offer.image || DEFAULT_ICON,
+        );
+      }, index * 900);
+    });
+
+    localStorage.setItem(OFFER_RELEASE_KEY, currentSignature);
+  },
+
   simulateOrderStatus: (orderId: string, type: 'takeaway' | 'delivery') => {
-    // Stage 1: Received (Immediate)
-    setTimeout(() => {
+    window.setTimeout(() => {
       NotificationService.show(
-        "Order Confirmed! 🍕",
-        `We've received your order ${orderId}. The chef is washing their hands right now!`
+        'Order Confirmed',
+        `We've received your order ${orderId}. The kitchen has started preparing it.`,
       );
     }, 1000);
 
-    // Stage 2: Preparing
-    setTimeout(() => {
+    window.setTimeout(() => {
       NotificationService.show(
-        "In the Oven! 🔥",
-        `Order ${orderId} is being baked to perfection. Smells amazing!`
+        'In the Oven',
+        `Order ${orderId} is being prepared fresh right now.`,
       );
     }, 15000);
 
-    // Stage 3: Ready / Out for Delivery
-    setTimeout(() => {
-      const msg = type === 'delivery' 
-        ? "Out for Delivery! 🛵" 
-        : "Ready for Pickup! 🥡";
+    window.setTimeout(() => {
+      const title = type === 'delivery' ? 'Out for Delivery' : 'Ready for Pickup';
       const body = type === 'delivery'
-        ? "Our partner is on the way to your location. Get the plates ready!"
-        : "Your order is hot and waiting at the counter. See you soon!";
-      
-      NotificationService.show(msg, body);
+        ? 'Our delivery partner is on the way to your location.'
+        : 'Your order is hot and ready at the counter.';
+
+      NotificationService.show(title, body);
     }, 45000);
   },
-
-  sendSpecialOffer: () => {
-    NotificationService.show(
-      "Mid-Day Craving? 😋",
-      "Get a FREE Choco-Lava cake on orders above ₹300! Limited time offer. BECAUSE HARI KNOWS."
-    );
-  }
 };
