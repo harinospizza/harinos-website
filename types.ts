@@ -7,8 +7,10 @@ export enum Category {
   BEVERAGES = 'Beverages'
 }
 
+export type CategoryFilter = Category | 'All';
+
 export interface SizeOption {
-  label: string; 
+  label: string;
   price: number;
 }
 
@@ -16,7 +18,7 @@ export interface MenuItem {
   id: string;
   name: string;
   description: string;
-  price: number; 
+  price: number;
   category: Category;
   image: string;
   popular?: boolean;
@@ -26,33 +28,70 @@ export interface MenuItem {
   sizes?: SizeOption[];
 }
 
-export interface Offer {
+export interface OfferCard {
   id: string;
-  title: string;
-  description: string;
-  discountPercentage: number;
-  category?: Category;
+  enabled: boolean;
+  image: string;
+  offerTitle: string;
+  displayText: string;
+  offerPercentage?: number;
+  condition: string;
+  additionalItem?: string;
+  additionalItemImage?: string;
+  notifyCustomers?: boolean;
+}
+
+export interface OutletConfig {
+  id: string;
+  enabled: boolean;
+  name: string;
+  address: string;
+  phone: string;
+  latitude: number;
+  longitude: number;
+  deliveryRadiusKm: number;
+  freeDeliveryRadiusKm: number;
+  freeDeliveryMinimumOrder: number;
+  deliveryChargePerKm: number;
+  minimumDeliveryFee: number;
+}
+
+export interface CustomerLocation {
+  latitude: number;
+  longitude: number;
+  mapUrl: string;
 }
 
 export interface CartItem extends MenuItem {
   quantity: number;
-  totalPrice: number;
-  discountedPrice: number;
   selectedSize?: string;
+  basePrice: number;
+  isOfferBonus?: boolean;
+  sourceOfferId?: string;
 }
+
+export interface PricedCartItem extends CartItem {
+  discountedPrice: number;
+  totalPrice: number;
+  appliedOfferId?: string;
+  appliedOfferTitle?: string;
+}
+
+export interface OrderItem extends PricedCartItem {}
 
 export interface Order {
   id: string;
-  items: CartItem[];
+  items: OrderItem[];
   total: number;
   date: string;
   orderType: OrderType;
   deliveryFee?: number;
-}
-
-export interface ChatMessage {
-  role: 'user' | 'model';
-  text: string;
+  outletId?: string;
+  outletName?: string;
+  outletPhone?: string;
+  outletAddress?: string;
+  customerLocationUrl?: string;
+  distanceKm?: number | null;
 }
 
 export type OrderType = 'takeaway' | 'delivery' | 'dinein';
