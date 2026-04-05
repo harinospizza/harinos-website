@@ -1,14 +1,187 @@
 
-import { MenuItem, Category, Offer } from './types';
+import { MenuItem, Category, OfferCard, OutletConfig } from './types';
 
-export const OFFERS: Offer[] = [
- // { 
- // id: 'off1',
-//   title: 'Veggie Fiesta',
-//    description: 'Flat 10% OFF on all Pizzas!',
-  //  discountPercentage: 10,
-//    category: Category.PIZZA
-//  }
+// Edit only these outlet objects to route customers to the nearest outlet automatically.
+// Keep `enabled: true` only for outlets that are currently active.
+// Phone numbers can be written with `+91` or digits only.
+export const OUTLET_LOCATIONS: OutletConfig[] = [
+  // Outlet 1
+  {
+    id: 'outlet-1',
+
+    // Enable / Disable
+    enabled: true,
+
+    // Outlet Details
+    name: "Harino's Main Outlet",
+    address: 'Update outlet address here',
+    phone: '+917818958571',
+
+    // Coordinates
+    latitude: 28.011897,
+    longitude: 77.675534,
+
+    // Delivery Rules
+    deliveryRadiusKm: 7,
+    freeDeliveryRadiusKm: 3,
+    freeDeliveryMinimumOrder: 150,
+    deliveryChargePerKm: 15,
+    minimumDeliveryFee: 15,
+  },
+
+  // Outlet 2
+  {
+    id: 'outlet-2',
+
+    // Enable / Disable
+    enabled: false,
+
+    // Outlet Details
+    name: "Harino's Outlet 2",
+    address: 'Update outlet address here',
+    phone: '+910000000000',
+
+    // Coordinates
+    latitude: 0,
+    longitude: 0,
+
+    // Delivery Rules
+    deliveryRadiusKm: 7,
+    freeDeliveryRadiusKm: 3,
+    freeDeliveryMinimumOrder: 150,
+    deliveryChargePerKm: 15,
+    minimumDeliveryFee: 15,
+  },
+
+  // Outlet 3
+  {
+    id: 'outlet-3',
+
+    // Enable / Disable
+    enabled: false,
+
+    // Outlet Details
+    name: "Harino's Outlet 3",
+    address: 'Update outlet address here',
+    phone: '+910000000000',
+
+    // Coordinates
+    latitude: 0,
+    longitude: 0,
+
+    // Delivery Rules
+    deliveryRadiusKm: 7,
+    freeDeliveryRadiusKm: 3,
+    freeDeliveryMinimumOrder: 150,
+    deliveryChargePerKm: 15,
+    minimumDeliveryFee: 15,
+  },
+];
+
+// Edit only these three objects to manage all offers in the app.
+// Supported condition examples:
+// - "Apply on Pizza when selected size price is Rs 299 or more."
+// - "Apply on Cheese & Onion Pizza when selected size price is Rs 129 or more."
+// - "Apply on Burgers when cart total is Rs 249 or more."
+// - "Apply on full menu when cart total is Rs 499 or more."
+// If `offerPercentage` is empty, the card is treated as a display/info card only.
+// `notifyCustomers: true` will send a browser notification to customers who have enabled notifications.
+export const OFFER_CARDS: OfferCard[] = [
+  // Offer Card 1
+  {
+    id: 'offer-card-1',
+
+    // Enable / Disable
+    enabled: true,
+
+    // Images
+    image: '/images/hari.jpeg',
+
+    // Offer
+    offerTitle: 'Buy any Large Pizza and get a burger free',
+    displayText: 'Season Offer.',
+
+    // Offer Percentage
+    // offerPercentage: 0,
+
+    // Condition
+    // Use "selected size price" for item-based rules.
+    // Use "cart total" or "order total" for cart-based rules.
+    condition: 'Apply on Pizza when selected size price is Rs 299 or more.',
+
+    // Additional Item
+    // This exact menu item name will auto-add to the cart when the condition is met.
+    additionalItem: 'Tikka Burger',
+
+    // Additional Item Image
+    additionalItemImage: '/images/tikkaburgar.jpeg',
+
+    // Notification
+    notifyCustomers: true,
+  },
+
+  // Offer Card 2
+  {
+    id: 'offer-card-2',
+
+    // Enable / Disable
+    enabled: true,
+
+    // Images
+    image: '/images/vegover.jpeg',
+
+    // Offer
+    offerTitle: "New launch: Harino's Special",
+    displayText: 'Try our latest limited time dish',
+
+    // Offer Percentage
+    offerPercentage: 15,
+
+    // Condition
+    // Mention a menu item name exactly to target only that item.
+    condition: "Apply on Harino's Special when selected size price is Rs 219 or more.",
+
+    // Additional Item
+    // This exact menu item name will auto-add to the cart when the condition is met.
+    additionalItem: 'Stuffed Garlic Bread',
+
+    // Additional Item Image
+    additionalItemImage: '/images/stuffed.jpeg',
+
+    // Notification
+    notifyCustomers: true,
+  },
+
+  // Offer Card 3
+  {
+    id: 'offer-card-3',
+
+    // Enable / Disable
+    enabled: false,
+
+    // Images
+    image: '/images/chocolava.jpeg',
+
+    // Offer
+    offerTitle: 'Store update or custom announcement',
+    displayText: 'Keep this card for info, timings, launch news, bundle highlights, or any message you want to show.',
+
+    // Offer Percentage
+    offerPercentage: undefined,
+
+    // Condition
+    condition: 'Display only card. No automatic discount rule.',
+
+    // Additional Item
+    // This exact menu item name will auto-add to the cart when the condition is met.
+    additionalItem: 'Cold Coffee',
+
+    // Additional Item Image
+    additionalItemImage: '/images/coldcoffee.jpeg',
+
+    // Notification
+    notifyCustomers: false,
+  },
 ];
 
 export const MENU_ITEMS: MenuItem[] = [
@@ -84,8 +257,8 @@ export const MENU_ITEMS: MenuItem[] = [
   },
   {
     id: 'p2_pm',
-    name: "Paneer Masala (Paneer + Olives)",
-    description: "Masala spiced paneer chunks paired with tangy black olives.",
+    name: "Paneer Masala (Paneer + Blended Spices)",
+    description: "Masala spiced paneer chunks paired with tangy Blended Spices.",
     price: 149,
     category: Category.PIZZA,
     image: "/images/paneermasala.jpeg",
@@ -95,7 +268,7 @@ export const MENU_ITEMS: MenuItem[] = [
   },
   {
     id: 'p2_tkp',
-    name: "Teekha Paneer (Paneer + Red Paprika)",
+    name: "Teekha Paneer (Paneer + Hot Chilly)",
     description: "Spicy paneer pizza for those who love a hot kick.",
     price: 149,
     category: Category.PIZZA,
@@ -121,8 +294,8 @@ export const MENU_ITEMS: MenuItem[] = [
   // --- PIZZAS: 3. Veg Special Pizzas ---
   {
     id: 'p3_mt',
-    name: "Masala Twist (Veg + Jalapeno)",
-    description: "Mixed veggies with a spicy jalapeno twist.",
+    name: "Masala Twist (Veg + Blended Spices)",
+    description: "Mixed veggies with a Blended spices twist.",
     price: 169,
     category: Category.PIZZA,
     image: "/images/masala.jpeg",
@@ -142,6 +315,7 @@ export const MENU_ITEMS: MenuItem[] = [
     popular: true,
     sizes: [{ label: 'Regular', price: 169 }, { label: 'Medium', price: 299 }, { label: 'Large', price: 429 }]
   },
+
   // --- PIZZAS: 4. Crunch & Fusion ---
   {
     id: 'p4_mc',
@@ -282,26 +456,26 @@ export const MENU_ITEMS: MenuItem[] = [
     sizes: [{ label: 'Half', price: 60 }, { label: 'Full', price: 90 }]
   },
   //{
-   // id: 'm5_v',
+    //id: 'm5_v',
     //name: "Veg Crunchy Momos",
-   // description: "Extra crispy breaded veg momos.",
-  //  price: 70,
-  //  category: Category.MOMOS_FRIES,
-  //  image: "/images/crunchymomos.jpeg",
-  //  vegetarian: true,
-  //  available: true,
-  //  sizes: [{ label: 'Half', price: 70 }, { label: 'Full', price: 100 }]
- // },
+    //description: "Extra crispy breaded veg momos.",
+    //price: 70,
+    //category: Category.MOMOS_FRIES,
+    //image: "/images/crunchymomos.jpeg",
+    //vegetarian: true,
+    //available: true,
+    //sizes: [{ label: 'Half', price: 70 }, { label: 'Full', price: 100 }]
+  //},
   //{
-   // id: 'm5_s',
-   // name: "Soya Crunchy Momos",
-   // description: "Breaded crunchy soya dumplings.",
-   // price: 60,
-   // category: Category.MOMOS_FRIES,
-   // image: "/images/crunchymomos.jpeg",
-   // vegetarian: true,
-   // available: true,
-   // sizes: [{ label: 'Half', price: 60 }, { label: 'Full', price: 90 }]
+    //id: 'm5_s',
+    //name: "Soya Crunchy Momos",
+    //description: "Breaded crunchy soya dumplings.",
+    //price: 60,
+    //category: Category.MOMOS_FRIES,
+    //image: "/images/crunchymomos.jpeg",
+    //vegetarian: true,
+    //available: true,
+    //sizes: [{ label: 'Half', price: 60 }, { label: 'Full', price: 90 }]
   //},
   {
     id: 'm6_v',
@@ -345,17 +519,6 @@ export const MENU_ITEMS: MenuItem[] = [
     price: 70,
     category: Category.MOMOS_FRIES,
     image: "/images/cheesefries.jpeg",
-    vegetarian: true,
-    available: true,
-    sizes: [{ label: 'Half', price: 70 }, { label: 'Full', price: 140 }]
-  },
-  {
-    id: 'f_td',
-    name: "Tandoori Fries",
-    description: "Fries with a smoky tandoori sauce.",
-    price: 70,
-    category: Category.MOMOS_FRIES,
-    image: "/images/tandurifries.jpeg",
     vegetarian: true,
     available: true,
     sizes: [{ label: 'Half', price: 70 }, { label: 'Full', price: 140 }]
@@ -452,7 +615,7 @@ export const MENU_ITEMS: MenuItem[] = [
 export const SYSTEM_INSTRUCTION = `
 You are Harino's AI Assistant. 
 TAGLINE: BECAUSE HARI KNOWS.
-OUTLET: Harino's Pizza & Fast Food. 100% VEGETARIAN.
+OUTLET: Harino's Pizza. 100% VEGETARIAN.
 OFFICIAL WEBSITE: https://harinos.store
 PRICES: All inclusive of 5% GST.
 
