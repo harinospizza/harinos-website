@@ -2,7 +2,6 @@
   "name": "Harino's Pizza",
   "description": "Premium Pizza Outlet with AI assistant, Loyalty Program, and WhatsApp Ordering.",
   "requestFramePermissions": [
-    "microphone",
     "geolocation"
   ]
 }
