@@ -135,7 +135,7 @@ export const OFFER_CARDS: OfferCard[] = [
     displayText: 'Try our latest limited time dish',
 
     // Offer Percentage
-    offerPercentage: 15,
+    offerPercentage: undefined,
 
     // Condition
     // Mention a menu item name exactly to target only that item.
