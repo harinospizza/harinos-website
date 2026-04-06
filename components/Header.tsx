@@ -24,7 +24,7 @@ const Header: React.FC<HeaderProps> = ({
   const [scrolled, setScrolled] = useState(false);
   const [notifStatus, setNotifStatus] = useState<NotificationPermission>('default');
   const [showInstallHelp, setShowInstallHelp] = useState(false);
-  const logoUrl = 'https://drive.google.com/thumbnail?id=1Gz7Qi82EYLJZxm1EfFxpXHHQ6mhKQIc4&sz=w500';
+  const logoUrl = '/icon-192.png';
   const { canPromptInstall, needsIosInstructions, isInstalled, promptInstall } = useInstallPrompt();
 
   useEffect(() => {
