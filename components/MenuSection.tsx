@@ -1,132 +1,158 @@
-
 import React, { useState } from 'react';
-import { MenuItem, Offer } from '../types';
+import { MenuItem, OfferCard } from '../types';
+import {
+  getDiscountedUnitPrice,
+  getOfferConditionLabel,
+  getOfferMinimumScope,
+  getMatchingDiscountOffer,
+  isOfferUnlocked,
+} from '../offerUtils';
 
 interface MenuSectionProps {
   items: MenuItem[];
   onAddToCart: (item: MenuItem, selectedSize?: string) => void;
-  activeOffers: Offer[];
-  selectedCategory: string;
+  offers: OfferCard[];
+  cartSubtotal: number;
 }
 
-const MenuCard: React.FC<{ 
-  item: MenuItem; 
-  onAdd: (size?: string) => void; 
-  activeOffers: Offer[] 
-}> = ({ item, onAdd, activeOffers }) => {
-  const [selectedSize, setSelectedSize] = useState<string>(
-    item.sizes ? item.sizes[0].label : ''
-  );
+interface MenuCardProps {
+  item: MenuItem;
+  offers: OfferCard[];
+  cartSubtotal: number;
+  onAdd: (selectedSize?: string) => void;
+}
+
+const MenuCard: React.FC<MenuCardProps> = ({ item, offers, cartSubtotal, onAdd }) => {
+  const [selectedSize, setSelectedSize] = useState<string>(item.sizes?.[0]?.label ?? '');
   const [isAdding, setIsAdding] = useState(false);
 
-  const getPriceForSelectedSize = () => {
-    if (!item.sizes || !selectedSize) return item.price;
-    const sizeOpt = item.sizes.find(s => s.label === selectedSize);
-    return sizeOpt ? sizeOpt.price : item.price;
-  };
-
-  const handleAddClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    setIsAdding(true);
-    onAdd(selectedSize || undefined);
-    setTimeout(() => setIsAdding(false), 600);
-  };
-
-  const currentBasePrice = getPriceForSelectedSize();
-  const applicableOffer = activeOffers.find(o => !o.category || o.category === item.category);
-  const discountedPrice = applicableOffer ? Math.round(currentBasePrice * (1 - applicableOffer.discountPercentage / 100)) : currentBasePrice;
+  const currentBasePrice =
+    item.sizes?.find((size) => size.label === selectedSize)?.price ?? item.price;
+  const previewOffer = getMatchingDiscountOffer(offers, item);
+  const previewAmount = cartSubtotal + currentBasePrice;
+  const offerUnlocked = previewOffer ? isOfferUnlocked(previewOffer, currentBasePrice, previewAmount) : false;
+  const activeOffer = offerUnlocked ? previewOffer : undefined;
+  const discountedPrice = getDiscountedUnitPrice(currentBasePrice, activeOffer);
   const hasDiscount = discountedPrice < currentBasePrice;
 
+  const handleAddClick = (event: React.MouseEvent) => {
+    event.stopPropagation();
+    setIsAdding(true);
+    onAdd(selectedSize || undefined);
+    window.setTimeout(() => setIsAdding(false), 500);
+  };
+
   return (
-    <div className={`group bg-white rounded-[2.5rem] overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-500 transform border border-orange-100 flex flex-col ${!item.available ? 'grayscale opacity-60 pointer-events-none' : 'hover:-translate-y-2'}`}>
-      <div className="relative h-64 overflow-hidden">
-        <img 
-          src={item.image} 
-          alt={item.name} 
-          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000"
+    <div
+      className={`group flex h-full flex-col overflow-hidden rounded-[2.25rem] border border-orange-100 bg-white shadow-sm transition-all duration-500 ${
+        item.available ? 'hover:-translate-y-1.5 hover:shadow-2xl' : 'pointer-events-none opacity-60 grayscale'
+      }`}
+    >
+      <div className="relative h-60 overflow-hidden">
+        <img
+          src={item.image}
+          alt={item.name}
+          className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
         />
-        <div className="absolute top-4 left-4 flex flex-col space-y-2">
-          <div className="bg-white/95 backdrop-blur-sm p-1.5 rounded-lg shadow-xl">
-             <div className="w-3.5 h-3.5 border-2 border-green-600 flex items-center justify-center rounded-sm">
-               <div className="w-1.5 h-1.5 bg-green-600 rounded-full"></div>
-             </div>
-          </div>
-          {item.popular && <span className="bg-amber-400 text-amber-950 px-2.5 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest shadow-lg">Popular</span>}
-          {item.spicy && <span className="bg-red-600 text-white px-2.5 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest shadow-lg">Spicy</span>}
+        <div className="absolute inset-0 bg-gradient-to-t from-slate-950/60 via-transparent to-transparent" />
+
+        <div className="absolute left-4 top-4 flex flex-wrap gap-2">
+          <span className="rounded-full bg-white px-3 py-1 text-[10px] font-black uppercase tracking-[0.2em] text-green-700 shadow-sm">
+            Veg
+          </span>
+          {item.popular && (
+            <span className="rounded-full bg-amber-300 px-3 py-1 text-[10px] font-black uppercase tracking-[0.2em] text-amber-950 shadow-sm">
+              Popular
+            </span>
+          )}
+          {item.spicy && (
+            <span className="rounded-full bg-red-600 px-3 py-1 text-[10px] font-black uppercase tracking-[0.2em] text-white shadow-sm">
+              Spicy
+            </span>
+          )}
+          {previewOffer?.offerPercentage && (
+            <span className="rounded-full bg-slate-900 px-3 py-1 text-[10px] font-black uppercase tracking-[0.2em] text-white shadow-sm">
+              Save {previewOffer.offerPercentage}%
+            </span>
+          )}
         </div>
-        
-        {item.available && (
-          <div className="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-10">
-            <button 
-              onClick={handleAddClick}
-              className={`px-8 py-4 bg-red-600 text-white rounded-2xl font-bold uppercase tracking-[0.2em] text-[10px] shadow-2xl transform transition-all hover:bg-red-700 active:scale-90 ${isAdding ? 'scale-110 bg-green-600' : ''}`}
-            >
-              {isAdding ? '✓ Added' : 'Quick Add +'}
-            </button>
-          </div>
-        )}
       </div>
 
-      <div className="p-8 flex-1 flex flex-col">
-        <div className="flex justify-between items-start mb-4">
-          <h3 className="text-xl font-display font-bold text-slate-900 leading-tight pr-4">{item.name}</h3>
-          <div className="flex flex-col items-end">
-            <span className="text-xl font-display font-bold text-red-600 whitespace-nowrap">₹{discountedPrice}</span>
-            {hasDiscount && <span className="text-xs text-slate-400 line-through">₹{currentBasePrice}</span>}
+      <div className="flex flex-1 flex-col p-6">
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <h3 className="text-2xl font-display font-bold leading-tight text-slate-900">{item.name}</h3>
+            <p className="mt-3 text-sm leading-relaxed text-slate-500">{item.description}</p>
+          </div>
+
+          <div className="text-right">
+            <div className="text-2xl font-display font-bold text-red-600">Rs {discountedPrice}</div>
+            {hasDiscount && <div className="text-sm text-slate-400 line-through">Rs {currentBasePrice}</div>}
           </div>
         </div>
-        
-        <p className="text-slate-500 text-xs leading-relaxed mb-6 flex-1 line-clamp-2">{item.description}</p>
-        
+
         {item.sizes && (
-          <div className="mb-6">
-            <div className="flex bg-slate-50 p-1 rounded-xl border border-slate-100">
-              {item.sizes.map((s) => (
-                <button
-                  key={s.label}
-                  onClick={() => setSelectedSize(s.label)}
-                  className={`flex-1 py-2.5 px-1 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all ${selectedSize === s.label ? 'bg-white shadow-sm text-red-600' : 'text-slate-400 hover:text-slate-600'}`}
-                >
-                  {s.label}
-                </button>
-              ))}
+          <div className="mt-6 flex rounded-2xl border border-orange-100 bg-orange-50/70 p-1">
+            {item.sizes.map((size) => (
+              <button
+                key={size.label}
+                onClick={() => setSelectedSize(size.label)}
+                className={`flex-1 rounded-[1rem] px-3 py-3 text-[10px] font-black uppercase tracking-[0.2em] transition-all ${
+                  selectedSize === size.label
+                    ? 'bg-white text-red-600 shadow-sm'
+                    : 'text-slate-500 hover:text-slate-900'
+                }`}
+              >
+                {size.label}
+              </button>
+            ))}
+          </div>
+        )}
+
+        {previewOffer && (
+          <div className="mt-5 rounded-2xl border border-orange-100 bg-orange-50/60 px-4 py-3">
+            <div className="text-[10px] font-black uppercase tracking-[0.22em] text-orange-700">
+              {previewOffer.offerTitle}
+            </div>
+            <div className="mt-1 text-xs leading-relaxed text-slate-600">
+              {getOfferConditionLabel(previewOffer)}
+              {!offerUnlocked
+                ? getOfferMinimumScope(previewOffer) === 'cart'
+                  ? ' Add more items to the cart to unlock this offer.'
+                  : ' Choose a higher-value size to unlock this offer.'
+                : ''}
             </div>
           </div>
         )}
 
-        <div className="flex items-center justify-between pt-5 border-t border-slate-50">
-          <span className="text-[9px] text-slate-300 uppercase tracking-[0.3em] font-black">{item.category}</span>
-          {item.available && (
-            <button 
-              onClick={handleAddClick} 
-              className={`w-10 h-10 rounded-xl transition-all flex items-center justify-center shadow-sm active:scale-75 ${isAdding ? 'bg-green-600 text-white' : 'bg-red-50 text-red-600 hover:bg-red-600 hover:text-white'}`}
-            >
-              {isAdding ? (
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" /></svg>
-              ) : (
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M12 4v16m8-8H4" /></svg>
-              )}
-            </button>
-          )}
+        <div className="mt-6 flex items-center justify-between border-t border-slate-100 pt-5">
+          <span className="text-[10px] font-black uppercase tracking-[0.22em] text-slate-400">{item.category}</span>
+          <button
+            onClick={handleAddClick}
+            className={`inline-flex h-12 min-w-[124px] items-center justify-center rounded-2xl px-5 text-[10px] font-black uppercase tracking-[0.22em] transition-all ${
+              isAdding ? 'bg-green-600 text-white' : 'bg-red-600 text-white hover:bg-red-700'
+            }`}
+          >
+            {isAdding ? 'Added' : item.available ? 'Add to cart' : 'Unavailable'}
+          </button>
         </div>
       </div>
     </div>
   );
 };
 
-const MenuSection: React.FC<MenuSectionProps> = ({ items, onAddToCart, activeOffers }) => {
-  return (
-    <div>
-      {items.map((item) => (
-        <MenuCard 
-          key={item.id} 
-          item={item} 
-          onAdd={(size) => onAddToCart(item, size)} 
-          activeOffers={activeOffers} 
-        />
-      ))}
-    </div>
-  );
-};
+const MenuSection: React.FC<MenuSectionProps> = ({ items, onAddToCart, offers, cartSubtotal }) => (
+  <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
+    {items.map((item) => (
+      <MenuCard
+        key={item.id}
+        item={item}
+        offers={offers}
+        cartSubtotal={cartSubtotal}
+        onAdd={(selectedSize) => onAddToCart(item, selectedSize)}
+      />
+    ))}
+  </div>
+);
 
 export default MenuSection;
