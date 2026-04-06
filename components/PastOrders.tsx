@@ -13,6 +13,9 @@ const PastOrders: React.FC<PastOrdersProps> = ({ orders, onReorder }) => {
       <div className="flex flex-col items-center mb-12">
         <h2 className="text-5xl font-display font-bold text-slate-900 mb-2">Order History</h2>
         <div className="h-1.5 w-24 bg-red-600 rounded-full"></div>
+        <p className="mt-4 text-[10px] font-black uppercase tracking-[0.22em] text-slate-400">
+          Swipe right to go back
+        </p>
       </div>
 
       {orders.length === 0 ? (
@@ -31,6 +34,11 @@ const PastOrders: React.FC<PastOrdersProps> = ({ orders, onReorder }) => {
                     <span className="font-mono text-slate-900 font-bold">{order.id}</span>
                   </div>
                   <p className="text-slate-400 text-sm font-medium">{order.date}</p>
+                  {order.outletName && (
+                    <p className="mt-2 text-[10px] font-black uppercase tracking-[0.18em] text-slate-500">
+                      Routed to {order.outletName}
+                    </p>
+                  )}
                 </div>
                 <div className="mt-4 md:mt-0 px-4 py-2 bg-orange-50 rounded-xl">
                   <span className="text-xs font-black uppercase tracking-widest text-orange-600">{order.orderType}</span>
