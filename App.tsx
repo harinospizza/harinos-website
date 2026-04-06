@@ -193,44 +193,6 @@ const App: React.FC = () => {
     [activeOutlets],
   );
 
-  useEffect(() => {
-    if (!customerLocation) {
-      setNearestOutletMatch(null);
-      setIsResolvingOutletMatch(false);
-      return;
-    }
-
-    let isCancelled = false;
-    setIsResolvingOutletMatch(true);
-
-    findNearestOutletByRoadDistance(customerLocation, activeOutlets)
-      .then((outletMatch) => {
-        if (isCancelled) {
-          return;
-        }
-
-        setNearestOutletMatch(outletMatch);
-      })
-      .catch((error) => {
-        if (isCancelled) {
-          return;
-        }
-
-        console.error('Road distance routing failed:', error);
-        setNearestOutletMatch(null);
-        showNotification('Unable to calculate road distance right now. Please try again.');
-      })
-      .finally(() => {
-        if (!isCancelled) {
-          setIsResolvingOutletMatch(false);
-        }
-      });
-
-    return () => {
-      isCancelled = true;
-    };
-  }, [activeOutlets, customerLocation, showNotification]);
-
   const scrollMenuIntoView = useCallback(() => {
     window.setTimeout(() => {
       menuRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -289,7 +251,7 @@ const App: React.FC = () => {
 
   const detectLocation = useCallback(async (): Promise<CustomerLocation | null> => {
     if (!activeOutlets.length) {
-      alert('Please enable at least one outlet in constants.tsx before accepting orders.');
+      alert('No active outlet is configured right now. Add a live outlet in constants.tsx before accepting orders.');
       return null;
     }
 
@@ -305,12 +267,20 @@ const App: React.FC = () => {
       };
 
       setCustomerLocation(resolvedLocation);
+
+      try {
+        await refreshNearestOutletMatch(resolvedLocation);
+      } catch (routingError) {
+        console.error('Road distance routing failed:', routingError);
+        showNotification('Unable to calculate road distance right now. Please try again.');
+      }
+
       return resolvedLocation;
     } catch (error) {
       alert('Location is mandatory so we can route your order to the nearest outlet.');
       return null;
     }
-  }, [activeOutlets.length]);
+  }, [activeOutlets.length, refreshNearestOutletMatch, showNotification]);
 
   const handleOrderTypeChange = async (type: OrderType) => {
     setOrderType(type);
@@ -403,13 +373,14 @@ const App: React.FC = () => {
     (offer: OfferCard) => {
       const target = getOfferActionTarget(offer);
       setSelectedCategory(target.category);
-      setView('menu');
+      applyAppScreen('menu');
+      replaceAppScreen('menu');
       if (target.item) {
         showNotification(`${target.item.name} is featured in this offer.`);
       }
       scrollMenuIntoView();
     },
-    [scrollMenuIntoView, showNotification],
+    [applyAppScreen, replaceAppScreen, scrollMenuIntoView, showNotification],
   );
 
   const handleNotificationsEnabled = useCallback(() => {
@@ -418,7 +389,7 @@ const App: React.FC = () => {
 
   const resolveNearestOutletForOrder = useCallback(async () => {
     if (!activeOutlets.length) {
-      alert('Please enable at least one outlet in constants.tsx before accepting orders.');
+      alert('No active outlet is configured right now. Add a live outlet in constants.tsx before accepting orders.');
       return null;
     }
 
@@ -651,6 +622,7 @@ const App: React.FC = () => {
       })
       .join('\n');
 
+    const outletAddressLine = outlet.address ? `OUTLET ADDRESS: ${outlet.address}\n` : '';
     const whatsappMessage = `
 *HARINO'S ORDER - ${orderId}*
 --------------------------
@@ -659,8 +631,7 @@ PAYMENT: COMPLETED
 --------------------------
 OUTLET: ${outlet.name}
 OUTLET PHONE: ${outlet.phone}
-OUTLET ADDRESS: ${outlet.address}
-ROAD DISTANCE: ${outletMatch.distanceKm.toFixed(1)} km
+${outletAddressLine}ROAD DISTANCE: ${outletMatch.distanceKm.toFixed(1)} km
 --------------------------
 *ITEMS:*
 ${itemsText}
