@@ -93,33 +93,51 @@ const CartSidebar: React.FC<CartSidebarProps> = ({
               <div className="mb-5 grid grid-cols-3 gap-2">
                 <button
                   onClick={() => setOrderType('takeaway')}
-                  className={`relative rounded-2xl border-2 p-3 transition-all ${
-                    orderType === 'takeaway' ? 'border-red-600 bg-red-50' : 'border-slate-200 bg-white'
+                  className={`group relative overflow-hidden rounded-2xl border-2 p-3 transition-all duration-300 ${
+                    orderType === 'takeaway'
+                      ? 'scale-[1.02] border-red-600 bg-gradient-to-br from-red-50 to-orange-50 shadow-lg shadow-red-100'
+                      : 'border-slate-200 bg-white hover:-translate-y-0.5 hover:border-red-200'
                   }`}
                 >
-                  <div className="mb-1 text-lg font-display font-bold text-slate-900">Bag</div>
+                  <div className="mx-auto mb-2 flex h-10 w-10 items-center justify-center rounded-2xl bg-white shadow-sm ring-1 ring-black/5">
+                    <svg className="h-5 w-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2" d="M6 8h12l1 11H5L6 8zm3 0V6a3 3 0 116 0v2" />
+                    </svg>
+                  </div>
                   <div className="text-[10px] font-black tracking-widest">TAKEAWAY</div>
                   <div className="text-[9px] text-slate-400">Fastest</div>
                 </button>
 
                 <button
                   onClick={() => setOrderType('delivery')}
-                  className={`rounded-2xl border-2 p-3 transition-all ${
-                    orderType === 'delivery' ? 'border-red-600 bg-red-50' : 'border-slate-200 bg-white'
+                  className={`group relative overflow-hidden rounded-2xl border-2 p-3 transition-all duration-300 ${
+                    orderType === 'delivery'
+                      ? 'scale-[1.02] border-red-600 bg-gradient-to-br from-red-50 to-orange-50 shadow-lg shadow-red-100'
+                      : 'border-slate-200 bg-white hover:-translate-y-0.5 hover:border-red-200'
                   }`}
                 >
-                  <div className="mb-1 text-lg font-display font-bold text-slate-900">Ride</div>
+                  <div className="mx-auto mb-2 flex h-10 w-10 items-center justify-center rounded-2xl bg-white shadow-sm ring-1 ring-black/5">
+                    <svg className="h-5 w-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2" d="M3 15h2l2-5h8l2 5h1a2 2 0 110 4 2 2 0 01-2-2H9a2 2 0 11-4 0H3m4-5h6m2 0h2" />
+                    </svg>
+                  </div>
                   <div className="text-[10px] font-black tracking-widest">DELIVERY</div>
                   <div className="text-[9px] text-slate-400">Home</div>
                 </button>
 
                 <button
                   onClick={() => setOrderType('dinein')}
-                  className={`rounded-2xl border-2 p-3 transition-all ${
-                    orderType === 'dinein' ? 'border-red-600 bg-red-50' : 'border-slate-200 bg-white'
+                  className={`group relative overflow-hidden rounded-2xl border-2 p-3 transition-all duration-300 ${
+                    orderType === 'dinein'
+                      ? 'scale-[1.02] border-red-600 bg-gradient-to-br from-red-50 to-orange-50 shadow-lg shadow-red-100'
+                      : 'border-slate-200 bg-white hover:-translate-y-0.5 hover:border-red-200'
                   }`}
                 >
-                  <div className="mb-1 text-lg font-display font-bold text-slate-900">Seat</div>
+                  <div className="mx-auto mb-2 flex h-10 w-10 items-center justify-center rounded-2xl bg-white shadow-sm ring-1 ring-black/5">
+                    <svg className="h-5 w-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2" d="M7 4v8m10-8v8M5 20h14M7 12h10M9 12v8m6-8v8" />
+                    </svg>
+                  </div>
                   <div className="text-[10px] font-black tracking-widest">DINE-IN</div>
                   <div className="text-[9px] text-slate-400">At outlet</div>
                 </button>
