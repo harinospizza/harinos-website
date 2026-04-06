@@ -32,7 +32,7 @@
     <meta property="og:title" content="Harino's Pizza" />
     <meta
       property="og:description"
-      content="Premium Pizza Outlet with AI assistant, Loyalty Program, and WhatsApp Ordering. Because Hari Knows."
+      content="Harino's Pizza ordering app with live offers, WhatsApp checkout, and installable home-screen access. Because Hari Knows."
     />
     <meta
       property="og:image"
@@ -44,7 +44,7 @@
     <meta property="twitter:title" content="Harino's Pizza" />
     <meta
       property="twitter:description"
-      content="Premium Pizza Outlet with AI assistant. Order now at harinos.store."
+      content="Install Harino's Pizza for faster ordering, live offers, and WhatsApp checkout."
     />
     <meta
       property="twitter:image"
@@ -133,6 +133,34 @@
           install-attention-pulse 1.6s ease-in-out infinite,
           install-attention-shake 0.55s ease-in-out infinite;
         transform-origin: center;
+      }
+
+      @keyframes install-popup-float {
+        0%,
+        100% {
+          transform: translateY(0);
+        }
+        50% {
+          transform: translateY(-6px);
+        }
+      }
+
+      @keyframes cta-glow {
+        0%,
+        100% {
+          box-shadow: 0 18px 40px rgba(220, 38, 38, 0.26);
+        }
+        50% {
+          box-shadow: 0 24px 56px rgba(220, 38, 38, 0.4);
+        }
+      }
+
+      .install-popup-card {
+        animation: install-popup-float 4s ease-in-out infinite;
+      }
+
+      .cta-glow {
+        animation: cta-glow 2.2s ease-in-out infinite;
       }
     </style>
   </head>
