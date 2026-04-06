@@ -35,9 +35,13 @@ import MenuSection from './components/MenuSection';
 import CartSidebar from './components/CartSidebar';
 import PastOrders from './components/PastOrders';
 import PaymentModal from './components/PaymentModal';
+import InstallPopup from './components/InstallPopup';
 import { useSwipeDismiss } from './hooks/useSwipeDismiss';
 
 const DISPLAY_OFFERS = OFFER_CARDS.slice(0, 3);
+const APP_HISTORY_NAMESPACE = 'harinos-ui';
+
+type AppScreen = 'menu' | 'orders' | 'category' | 'cart' | 'payment' | 'success';
 
 const App: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState<CategoryFilter>('All');
@@ -57,17 +61,49 @@ const App: React.FC = () => {
   const [isResolvingOutletMatch, setIsResolvingOutletMatch] = useState(false);
 
   const menuRef = useRef<HTMLDivElement>(null);
+  const applyAppScreen = useCallback((screen: AppScreen) => {
+    setView(screen === 'orders' ? 'orders' : 'menu');
+    setIsCategoryModalOpen(screen === 'category');
+    setIsCartOpen(screen === 'cart');
+    setIsPaymentOpen(screen === 'payment');
+    setShowOrderSuccess(screen === 'success');
+  }, []);
+  const pushAppScreen = useCallback((screen: AppScreen) => {
+    const currentState = window.history.state as { app?: string; screen?: AppScreen } | null;
+
+    if (currentState?.app === APP_HISTORY_NAMESPACE && currentState.screen === screen) {
+      return;
+    }
+
+    window.history.pushState({ app: APP_HISTORY_NAMESPACE, screen }, '', window.location.href);
+  }, []);
+  const replaceAppScreen = useCallback((screen: AppScreen) => {
+    window.history.replaceState({ app: APP_HISTORY_NAMESPACE, screen }, '', window.location.href);
+  }, []);
+  const handleAppBack = useCallback((fallback?: () => void) => {
+    const currentState = window.history.state as { app?: string; screen?: AppScreen } | null;
+
+    if (currentState?.app === APP_HISTORY_NAMESPACE && currentState.screen && currentState.screen !== 'menu') {
+      window.history.back();
+      return;
+    }
+
+    fallback?.();
+  }, []);
   const categorySwipeDismiss = useSwipeDismiss({
     direction: 'down',
-    onDismiss: () => setIsCategoryModalOpen(false),
+    onDismiss: () => handleAppBack(() => setIsCategoryModalOpen(false)),
   });
   const successSwipeDismiss = useSwipeDismiss({
     direction: 'down',
-    onDismiss: () => setShowOrderSuccess(false),
+    onDismiss: () => {
+      applyAppScreen('menu');
+      replaceAppScreen('menu');
+    },
   });
   const ordersSwipeDismiss = useSwipeDismiss({
     direction: 'right',
-    onDismiss: () => setView('menu'),
+    onDismiss: () => handleAppBack(() => setView('menu')),
   });
   const activeOfferCards = useMemo(
     () => DISPLAY_OFFERS.filter((offer) => offer.enabled),
@@ -79,6 +115,25 @@ const App: React.FC = () => {
   );
   const nearestOutlet = nearestOutletMatch?.outlet ?? null;
   const outletDistanceKm = nearestOutletMatch?.distanceKm ?? null;
+
+  useEffect(() => {
+    const currentState = window.history.state as { app?: string; screen?: AppScreen } | null;
+
+    if (currentState?.app !== APP_HISTORY_NAMESPACE) {
+      replaceAppScreen('menu');
+    }
+
+    const handlePopState = (event: PopStateEvent) => {
+      const nextState = event.state as { app?: string; screen?: AppScreen } | null;
+      const nextScreen = nextState?.app === APP_HISTORY_NAMESPACE ? nextState.screen ?? 'menu' : 'menu';
+      applyAppScreen(nextScreen);
+    };
+
+    window.addEventListener('popstate', handlePopState);
+    return () => {
+      window.removeEventListener('popstate', handlePopState);
+    };
+  }, [applyAppScreen, replaceAppScreen]);
 
   useEffect(() => {
     const checkStoreStatus = () => {
@@ -182,14 +237,54 @@ const App: React.FC = () => {
     }, 80);
   }, []);
 
+  const openOrdersView = useCallback(() => {
+    setView('orders');
+    pushAppScreen('orders');
+  }, [pushAppScreen]);
+
+  const openCartView = useCallback(() => {
+    setIsCartOpen(true);
+    pushAppScreen('cart');
+  }, [pushAppScreen]);
+
+  const openCategoryView = useCallback(() => {
+    setIsCategoryModalOpen(true);
+    pushAppScreen('category');
+  }, [pushAppScreen]);
+  const closeCategoryView = useCallback(() => {
+    handleAppBack(() => setIsCategoryModalOpen(false));
+  }, [handleAppBack]);
+  const closeCartView = useCallback(() => {
+    handleAppBack(() => setIsCartOpen(false));
+  }, [handleAppBack]);
+  const closePaymentView = useCallback(() => {
+    handleAppBack(() => setIsPaymentOpen(false));
+  }, [handleAppBack]);
+  const closeOrdersView = useCallback(() => {
+    handleAppBack(() => setView('menu'));
+  }, [handleAppBack]);
+  const closeSuccessView = useCallback(() => {
+    applyAppScreen('menu');
+    replaceAppScreen('menu');
+  }, [applyAppScreen, replaceAppScreen]);
+  const returnToMenu = useCallback(() => {
+    if (view === 'orders') {
+      closeOrdersView();
+      return;
+    }
+
+    applyAppScreen('menu');
+    replaceAppScreen('menu');
+  }, [applyAppScreen, closeOrdersView, replaceAppScreen, view]);
+
   const handleExploreCategory = useCallback(
     (category: CategoryFilter) => {
       setSelectedCategory(category);
-      setView('menu');
-      setIsCategoryModalOpen(false);
+      applyAppScreen('menu');
+      replaceAppScreen('menu');
       scrollMenuIntoView();
     },
-    [scrollMenuIntoView],
+    [applyAppScreen, replaceAppScreen, scrollMenuIntoView],
   );
 
   const detectLocation = useCallback(async (): Promise<CustomerLocation | null> => {
@@ -370,7 +465,7 @@ const App: React.FC = () => {
     );
   };
 
-  const handleReorder = (order: Order) => {
+  const handleReorder = useCallback((order: Order) => {
     const manualOrderItems = order.items.filter((item) => !item.isOfferBonus);
 
     if (!manualOrderItems.length) {
@@ -399,8 +494,9 @@ const App: React.FC = () => {
     setCart(reorderItems);
     setView('menu');
     setIsCartOpen(true);
+    pushAppScreen('cart');
     showNotification('Last order restored to basket.');
-  };
+  }, [pushAppScreen, showNotification]);
 
   const filteredItems = useMemo(
     () =>
@@ -491,6 +587,7 @@ const App: React.FC = () => {
 
     setIsCartOpen(false);
     setIsPaymentOpen(true);
+    pushAppScreen('payment');
   };
 
   const handlePaymentComplete = async () => {
@@ -544,7 +641,7 @@ const App: React.FC = () => {
     }
 
     StorageService.saveOrder(newOrder);
-    setPastOrders((currentOrders) => [newOrder, ...currentOrders]);
+    setPastOrders((currentOrders) => [newOrder, ...currentOrders].slice(0, 3));
     NotificationService.simulateOrderStatus(orderId, orderType === 'delivery' ? 'delivery' : 'takeaway');
 
     const itemsText = orderItems
@@ -581,6 +678,7 @@ ${locationString}
 
     window.open(`https://wa.me/${sanitizePhoneNumber(outlet.phone)}?text=${encodeURIComponent(whatsappMessage)}`, '_blank');
     setShowOrderSuccess(true);
+    replaceAppScreen('success');
     setCart([]);
   };
 
@@ -590,18 +688,19 @@ ${locationString}
     <div className="min-h-screen bg-slate-50/30 text-slate-900 overflow-x-hidden">
       <Header
         cartCount={totalCartItems}
-        onCartClick={() => setIsCartOpen(true)}
-        onViewOrders={() => setView('orders')}
-        onViewMenu={() => setView('menu')}
+        onCartClick={openCartView}
+        onViewOrders={openOrdersView}
+        onViewMenu={returnToMenu}
         activeView={view}
         onShare={handleShare}
         onNotificationsEnabled={handleNotificationsEnabled}
       />
+      <InstallPopup blocked={isCartOpen || isPaymentOpen || showOrderSuccess || isCategoryModalOpen || view === 'orders'} />
 
       <main className="pt-20">
         {view === 'menu' ? (
           <>
-            <Hero onShare={handleShare} onExploreMenu={() => setIsCategoryModalOpen(true)} />
+            <Hero onShare={handleShare} onExploreMenu={openCategoryView} />
             <OfferCarousel offers={activeOfferCards} onAction={handleOfferAction} />
 
             <div ref={menuRef} className="max-w-7xl mx-auto px-4 mt-8 md:mt-12 pb-24 scroll-mt-24">
@@ -659,7 +758,7 @@ ${locationString}
         <div className="fixed inset-0 z-[120] flex items-end justify-center p-0 sm:items-center sm:p-4">
           <div
             className="absolute inset-0 bg-slate-900/90 backdrop-blur-xl"
-            onClick={() => setIsCategoryModalOpen(false)}
+            onClick={closeCategoryView}
           />
           <div
             className="relative w-full max-w-2xl overflow-hidden rounded-t-[2rem] bg-white shadow-2xl sm:rounded-[3rem]"
@@ -709,7 +808,7 @@ ${locationString}
       {pricedCart.length > 0 && !isCartOpen && (
         <div className="fixed bottom-6 left-4 right-20 z-50 md:hidden">
           <button
-            onClick={() => setIsCartOpen(true)}
+            onClick={openCartView}
             className="w-full bg-slate-900 text-white px-5 py-4 rounded-2xl shadow-2xl flex items-center justify-between border border-white/10"
           >
             <div className="flex items-center space-x-3">
@@ -728,7 +827,7 @@ ${locationString}
 
       <CartSidebar
         isOpen={isCartOpen}
-        onClose={() => setIsCartOpen(false)}
+        onClose={closeCartView}
         items={pricedCart}
         onUpdateQuantity={updateQuantity}
         onRemove={removeFromCart}
@@ -748,7 +847,7 @@ ${locationString}
 
       <PaymentModal
         isOpen={isPaymentOpen}
-        onClose={() => setIsPaymentOpen(false)}
+        onClose={closePaymentView}
         total={currentTotal}
         onPaymentComplete={handlePaymentComplete}
         outletName={nearestOutlet?.name}
@@ -765,7 +864,7 @@ ${locationString}
 
       {showOrderSuccess && (
         <div className="fixed inset-0 z-[110] flex items-end justify-center px-0 sm:items-center sm:px-4">
-          <div className="absolute inset-0 bg-slate-900/75 backdrop-blur-md" onClick={() => setShowOrderSuccess(false)} />
+          <div className="absolute inset-0 bg-slate-900/75 backdrop-blur-md" onClick={closeSuccessView} />
           <div
             className="relative w-full max-w-sm rounded-t-[2rem] border-2 border-red-600 bg-slate-900 p-6 text-center text-white shadow-2xl sm:rounded-[3rem] sm:p-10"
             style={successSwipeDismiss.style}
@@ -786,7 +885,7 @@ ${locationString}
               Because Hari Knows
             </p>
             <button
-              onClick={() => setShowOrderSuccess(false)}
+              onClick={closeSuccessView}
               className="mt-10 px-10 py-4 bg-white/10 rounded-2xl text-[10px] font-bold uppercase tracking-widest hover:bg-white/20 transition-all w-full"
             >
               Dismiss
