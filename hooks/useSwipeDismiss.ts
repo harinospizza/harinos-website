@@ -14,6 +14,9 @@ interface TouchPoint {
 }
 
 const NO_OFFSET = { x: 0, y: 0 };
+const GESTURE_LOCK_THRESHOLD = 12;
+
+type GestureState = 'idle' | 'pending' | 'dragging' | 'ignored';
 
 export const useSwipeDismiss = ({
   direction = 'both',
@@ -21,11 +24,13 @@ export const useSwipeDismiss = ({
   onDismiss,
 }: UseSwipeDismissOptions) => {
   const startPointRef = useRef<TouchPoint | null>(null);
+  const gestureStateRef = useRef<GestureState>('idle');
   const [offset, setOffset] = useState(NO_OFFSET);
   const [isDragging, setIsDragging] = useState(false);
 
   const reset = () => {
     startPointRef.current = null;
+    gestureStateRef.current = 'idle';
     setOffset(NO_OFFSET);
     setIsDragging(false);
   };
@@ -33,7 +38,7 @@ export const useSwipeDismiss = ({
   const onTouchStart = (event: TouchEvent<HTMLElement>) => {
     const touch = event.touches[0];
     startPointRef.current = { x: touch.clientX, y: touch.clientY };
-    setIsDragging(true);
+    gestureStateRef.current = 'pending';
   };
 
   const onTouchMove = (event: TouchEvent<HTMLElement>) => {
@@ -44,6 +49,49 @@ export const useSwipeDismiss = ({
     const touch = event.touches[0];
     const deltaX = touch.clientX - startPointRef.current.x;
     const deltaY = touch.clientY - startPointRef.current.y;
+    const absDeltaX = Math.abs(deltaX);
+    const absDeltaY = Math.abs(deltaY);
+
+    if (gestureStateRef.current === 'ignored') {
+      return;
+    }
+
+    if (gestureStateRef.current === 'pending') {
+      if (absDeltaX < GESTURE_LOCK_THRESHOLD && absDeltaY < GESTURE_LOCK_THRESHOLD) {
+        return;
+      }
+
+      if (direction === 'right') {
+        if (deltaX > 0 && absDeltaX > absDeltaY) {
+          gestureStateRef.current = 'dragging';
+          setIsDragging(true);
+        } else {
+          gestureStateRef.current = 'ignored';
+        }
+        return;
+      }
+
+      if (direction === 'down') {
+        if (deltaY > 0 && absDeltaY > absDeltaX) {
+          gestureStateRef.current = 'dragging';
+          setIsDragging(true);
+        } else {
+          gestureStateRef.current = 'ignored';
+        }
+        return;
+      }
+
+      if ((deltaX > 0 && absDeltaX >= absDeltaY) || (deltaY > 0 && absDeltaY > absDeltaX)) {
+        gestureStateRef.current = 'dragging';
+        setIsDragging(true);
+      } else {
+        gestureStateRef.current = 'ignored';
+      }
+    }
+
+    if (gestureStateRef.current !== 'dragging') {
+      return;
+    }
 
     if (direction === 'right') {
       setOffset({ x: Math.max(0, deltaX), y: 0 });
@@ -65,8 +113,10 @@ export const useSwipeDismiss = ({
 
   const onTouchEnd = () => {
     const shouldDismiss =
+      gestureStateRef.current === 'dragging' && (
       offset.x >= threshold ||
-      offset.y >= threshold;
+      offset.y >= threshold
+      );
 
     reset();
 
